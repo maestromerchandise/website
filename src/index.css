@@ -418,6 +418,10 @@ a {
 }
 
 /* Product grid */
+/* Two columns on a phone, then as many as fit. `auto-fill` with a rem minimum
+   drops to a single full width column on a narrow screen, which turns one
+   product into the whole viewport; the explicit two column floor below the
+   breakpoint keeps the catalogue readable as a grid. */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
@@ -458,6 +462,10 @@ a {
   text-transform: uppercase;
   color: var(--text);
   transition: color 0.2s ease;
+  /* A long name in a narrow column has to break rather than push the tile wider
+     than its track, which would overflow the grid sideways. */
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .product-card:hover .name {
@@ -948,9 +956,42 @@ a {
     grid-auto-columns: 7.5rem;
   }
 
+  /* Three across on a tablet. An explicit count rather than auto-fill, because a
+     rem minimum collapses to one enormous column on a narrow screen and a
+     percentage minimum flips between counts at arbitrary widths. */
+  .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.25rem, 5vw, 2rem) clamp(0.75rem, 3vw, 1.25rem);
+  }
+
   .product-detail {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding-top: 3.25rem;
+  }
+
+  /* The panel spans whatever the grid currently has, so it still fills the row
+     when the column count changes under it. */
+  .detail-strip {
+    grid-template-columns: repeat(auto-fill, minmax(3.25rem, 1fr));
+  }
+
+  /* A full width action is easier to hit than two side by side on a phone. */
+  .detail-actions .button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Two across on a phone. Three would leave roughly 110px per tile at 360px,
+   which is too small for the photograph to read. */
+@media (max-width: 34rem) {
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 0.75rem;
+  }
+
+  .product-card {
+    gap: 0.6rem;
   }
 }
 
