@@ -13,9 +13,13 @@ dist-ssr
 *.local
 
 # Secrets and configuration. Only the .env.example files are committed.
-.env
-.env.*
-!.env.example
+# Unanchored, so studio/.env is caught as well as the one at the root.
+**/.env
+**/.env.*
+!**/.env.example
+
+# Sanity build cache, written by the Studio.
+.sanity/
 
 # Editor directories and files
 .vscode/*
