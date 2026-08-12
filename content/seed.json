@@ -1,0 +1,289 @@
+{
+  "_comment": "Copy transcribed from Web Maestro.pdf. Colour values are best guesses from the mockup swatches and should be corrected in Studio once the real finishes are confirmed. Images are added in Studio, not here.",
+  "homepage": {
+    "heroTitle": "Modern merchandising. Responsible impact",
+    "heroSubtitle": "Premium corporate & sustainable branding solutions",
+    "about": "Maestro is a premium merchandising and brand solution company, specialising in high quality custom products, corporate merchandise, apparel, packaging and gifting solutions.\n\nWe help brands transform their identity into refined physical products through thoughtful design, premium materials and professional production execution.\n\nWith a strong focus on aesthetics, craftsmanship and detail, we create merchandise that not only functions but strengthens brand perception and customer experience.",
+    "whyChooseUs": [
+      {
+        "title": "Premium quality",
+        "body": "We prioritise refined materials, clean finishing and elevated craftsmanship in every product."
+      },
+      {
+        "title": "Creative and modern design",
+        "body": "Our approach combines modern aesthetics with strategic branding to create merchandise that feels distinctive and relevant."
+      },
+      {
+        "title": "Professional production management",
+        "body": "We ensure quality consistency, timeline management and production precision from beginning to end."
+      },
+      {
+        "title": "Tailored solutions",
+        "body": "Every project is customised to match the client's brand identity, positioning and objectives."
+      },
+      {
+        "title": "End to end services",
+        "body": "From creative concept to final delivery, we manage the entire process professionally and efficiently."
+      }
+    ],
+    "services": [
+      {
+        "title": "Premium corporate merchandise",
+        "body": "Custom merchandise solutions tailored for companies, campaigns, events and brand activations."
+      },
+      {
+        "title": "Apparel and uniform production",
+        "body": "Premium polo shirts, jackets, uniforms, caps, sportswear and lifestyle apparel with professional finishing."
+      },
+      {
+        "title": "Executive and VIP gifting",
+        "body": "Luxury gifting concepts designed for executives, partners, clients and exclusive events."
+      },
+      {
+        "title": "Packaging and presentation",
+        "body": "Rigid boxes, premium packaging systems, paper bags, inserts and presentation kits that enhance perceived value."
+      },
+      {
+        "title": "Product development and sourcing",
+        "body": "Comprehensive support from concept development, material sourcing and prototyping through to production and quality control."
+      },
+      {
+        "title": "Custom brand collaboration",
+        "body": "Creative merchandise development for automotive, hospitality, transportation, sports, luxury and lifestyle brands."
+      }
+    ],
+    "faq": [
+      {
+        "question": "What is the minimum order quantity?",
+        "answer": "It depends on the product and the branding method. Send us your item and quantity on WhatsApp and we will confirm the minimum for that specific product."
+      },
+      {
+        "question": "Can you produce a fully custom item?",
+        "answer": "Yes. We support the full path from concept development and material sourcing through prototyping to production and quality control."
+      },
+      {
+        "question": "How long does production take?",
+        "answer": "Lead time varies with quantity, customisation and packaging. Share your deadline with your enquiry and we will tell you what is achievable."
+      },
+      {
+        "question": "Do you provide custom packaging?",
+        "answer": "Yes. We produce rigid boxes, premium packaging systems, paper bags, inserts and full presentation kits."
+      },
+      {
+        "question": "How do I request a quotation?",
+        "answer": "Use the form on this page or message us on WhatsApp with your product, quantity and timeline."
+      }
+    ]
+  },
+  "products": [
+    {
+      "id": "hydrate-smarter-bottle",
+      "title": "Hydrate Smarter Bottle",
+      "category": "eco-essentials",
+      "tagline": "Stay hydrated. Stay connected. Stay visible.",
+      "description": "A premium insulated bottle with a luminous glow in the dark body and an integrated magnetic phone stand, designed for life in motion.",
+      "features": [
+        "Magnetic phone stand",
+        "Glow in the dark body",
+        "Vacuum insulated",
+        "Leak proof",
+        "MagSafe compatible"
+      ],
+      "specifications": [
+        "600 mL",
+        "Food grade stainless steel 304",
+        "Double wall vacuum insulation",
+        "Hot and cold temperature retention"
+      ],
+      "colors": [{ "name": "White", "hex": "#F5F3F0" }],
+      "readyMade": true,
+      "order": 10
+    },
+    {
+      "id": "luminous-glow-bottle",
+      "title": "Luminous Glow Bottle",
+      "category": "eco-essentials",
+      "tagline": "Where intelligent innovation meets understated elegance.",
+      "description": "Precision crafted for modern lifestyles, delivering exceptional performance wrapped in a timeless luxury silhouette.",
+      "features": [
+        "Luminous glow body",
+        "Vacuum sealed insulation",
+        "Leak proof engineering",
+        "Signature metallic finish"
+      ],
+      "specifications": [
+        "600 mL capacity",
+        "Food grade stainless steel 304",
+        "Double wall vacuum technology",
+        "Hot and cold temperature retention"
+      ],
+      "colors": [
+        { "name": "Brushed Silver", "hex": "#C9C7C4" },
+        { "name": "Graphite", "hex": "#5A5A5C" },
+        { "name": "Forest Green", "hex": "#1F3A2E" },
+        { "name": "Deep Red", "hex": "#7C1F22" },
+        { "name": "Charcoal", "hex": "#3A3A3C" }
+      ],
+      "readyMade": true,
+      "order": 20
+    },
+    {
+      "id": "insulated-bottle-450",
+      "title": "Insulated Bottle 450",
+      "category": "eco-essentials",
+      "tagline": "Everyday luxury essential.",
+      "description": "A sophisticated insulated bottle crafted for those who appreciate exceptional design, premium materials and effortless functionality.",
+      "features": [
+        "Precision stainless steel construction",
+        "Sleek contemporary profile",
+        "Leak proof security",
+        "Everyday luxury essential"
+      ],
+      "specifications": [
+        "450 mL",
+        "Food grade stainless steel 304",
+        "Double wall vacuum insulation",
+        "Electroplate metallic finish",
+        "Hot and cold temperature retention"
+      ],
+      "colors": [
+        { "name": "Brushed Silver", "hex": "#C9C7C4" },
+        { "name": "Charcoal", "hex": "#3A3A3C" }
+      ],
+      "readyMade": true,
+      "order": 30
+    },
+    {
+      "id": "infuser-bottle",
+      "title": "Infuser Bottle",
+      "category": "eco-essentials",
+      "tagline": "Experience tea with exceptional precision.",
+      "description": "The innovative magnetic infuser descends effortlessly with a single touch, releasing rich flavours at the perfect moment. When your desired strength is reached, lift the infuser and enjoy a perfectly balanced brew.",
+      "features": [
+        "One touch magnetic infuser",
+        "Precision brew control",
+        "Crystal clear borosilicate glass",
+        "Leak proof engineering",
+        "Signature hammered metal finish"
+      ],
+      "specifications": [
+        "500 mL",
+        "Borosilicate glass",
+        "304 stainless steel infuser",
+        "BPA free"
+      ],
+      "colors": [{ "name": "Charcoal", "hex": "#3A3A3C" }],
+      "readyMade": true,
+      "order": 40
+    },
+    {
+      "id": "cutlery-set",
+      "title": "Cutlery Set",
+      "category": "eco-essentials",
+      "tagline": "Crafted for those who appreciate thoughtful design and everyday sophistication.",
+      "description": "A premium cutlery set that brings comfort, style and sustainability to every meal.",
+      "features": [
+        "Premium dining essentials",
+        "Elegant minimalist aesthetic",
+        "Travel ready convenience",
+        "Durable and sustainable",
+        "Crafted for everyday use"
+      ],
+      "specifications": [
+        "Premium 304 stainless steel",
+        "Chopsticks, spoon and fork",
+        "Protective carry pouch",
+        "Food grade construction",
+        "Reusable and easy maintenance",
+        "Designed for travel, office and outdoor dining"
+      ],
+      "colors": [{ "name": "Charcoal", "hex": "#3A3A3C" }],
+      "readyMade": true,
+      "order": 50
+    },
+    {
+      "id": "folded-cutlery-7-in-1",
+      "title": "7-in-1 Folded Cutlery",
+      "category": "eco-essentials",
+      "tagline": "One tool. Endless possibilities.",
+      "description": "A 7-in-1 utility companion crafted for travel, dining and outdoor adventures, where functionality meets smart design.",
+      "features": [
+        "Seven essential functions",
+        "Precision stainless steel construction",
+        "Compact pocket friendly design",
+        "Foldable multi tool system",
+        "Built for everyday carry"
+      ],
+      "specifications": [
+        "Seven in one: spoon, fork, knife blade, bottle opener, can opener, letter opener, wine bottle opener",
+        "Material: premium stainless steel 304",
+        "Finish: brushed silver",
+        "Design: foldable multi tool",
+        "Carry: integrated key ring",
+        "Use: travel, camping, outdoor, everyday carry"
+      ],
+      "colors": [{ "name": "Brushed Silver", "hex": "#C9C7C4" }],
+      "readyMade": true,
+      "order": 60
+    },
+    {
+      "id": "eco-folded-bag",
+      "title": "Eco Folded Bag",
+      "category": "eco-essentials",
+      "tagline": "Pack more. Carry less.",
+      "description": "A lightweight foldable tote crafted from durable ripstop fabric, designed to expand when you need it and fold away in seconds. Made for travel, shopping, daily carry and life on the go.",
+      "features": [
+        "Premium ripstop fabric",
+        "Ultra lightweight and durable",
+        "Folds into compact pocket size",
+        "Spacious large capacity design",
+        "Comfortable long shoulder handles",
+        "Reusable and travel friendly",
+        "Carries up to 7 kg"
+      ],
+      "specifications": [
+        "Material: ripstop polyester",
+        "Handle colour: grey",
+        "Capacity: up to 7 kg",
+        "Foldable: yes",
+        "Carry style: hand carry or shoulder carry",
+        "Usage: travel, shopping, daily essential"
+      ],
+      "colors": [
+        { "name": "Bright Blue", "hex": "#1F6FD0" },
+        { "name": "Cyan", "hex": "#37B8CE" },
+        { "name": "Blush", "hex": "#E8A9A2" },
+        { "name": "Coral", "hex": "#E4705E" }
+      ],
+      "readyMade": true,
+      "order": 70
+    },
+    {
+      "id": "eco-tote-bag",
+      "title": "Eco Tote Bag",
+      "category": "eco-essentials",
+      "tagline": "Effortless luxury, everyday utility.",
+      "description": "Crafted from premium heavyweight cotton with refined contrast detailing, this eco tote blends timeless style with practical performance, designed for work, travel, shopping and everything in between.",
+      "features": [
+        "Spacious and durable everyday carry",
+        "Reinforced handles for lasting comfort",
+        "Elegant two tone luxury design",
+        "Reusable and eco conscious alternative",
+        "Supports up to 10 kg load capacity"
+      ],
+      "specifications": [
+        "Material: premium cotton canvas",
+        "Fabric weight: 12 oz",
+        "Dimensions: 42 x 33 x 15 cm",
+        "Capacity: up to 10 kg",
+        "Colours: black and natural, or custom colours"
+      ],
+      "colors": [
+        { "name": "Natural", "hex": "#E4DCCD" },
+        { "name": "Black", "hex": "#1A1A1A" }
+      ],
+      "readyMade": true,
+      "order": 80
+    }
+  ]
+}
