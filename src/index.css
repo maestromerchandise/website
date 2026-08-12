@@ -313,8 +313,11 @@ a {
 .category-track {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(7rem, 1fr);
-  gap: clamp(0.75rem, 2vw, 1.75rem);
+  /* `max-content` sizes each column to its own label, so a long one such as
+     Apparel & Wearables stays on a single line instead of wrapping to two and
+     breaking the row. */
+  grid-auto-columns: minmax(max-content, 1fr);
+  gap: clamp(0.5rem, 1.2vw, 1rem);
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
@@ -329,13 +332,25 @@ a {
   display: none;
 }
 
+/* The reference prints each category on one line above its photograph, so the
+   label must not wrap. The columns are sized from the longest label rather than
+   a fixed width, and the row scrolls sideways when the nine no longer fit. */
 .category-card {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 0.9rem;
   align-items: center;
+  justify-content: flex-end;
   text-align: center;
   scroll-snap-align: start;
+}
+
+/* Slightly tighter than the shared eyebrow, so all nine labels fit the row at
+   the page width instead of the last one being cut off. */
+.category-card .eyebrow {
+  white-space: nowrap;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
 }
 
 .category-card .thumb {
