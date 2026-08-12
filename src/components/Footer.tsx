@@ -1,4 +1,6 @@
-import type { Contact } from '../lib/sanity'
+import { EVENTS, track } from '../lib/analytics'
+import type { SiteSettings } from '../lib/sanity'
+import { whatsappLink } from '../lib/whatsapp'
 
 /** Icon paths are inline so the footer costs no extra request. */
 const ICONS = {
@@ -11,11 +13,14 @@ const ICONS = {
   maps: 'M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5z',
 }
 
-export function Footer({ contact }: { contact?: Contact }) {
+export function Footer({ settings }: { settings: SiteSettings | null | undefined }) {
+  const contact = settings?.contact
+  const siteName = settings?.siteName ?? 'Maestro'
+
   const links = [
     { key: 'instagram', label: 'Instagram', href: contact?.instagram },
     { key: 'tiktok', label: 'TikTok', href: contact?.tiktok },
-    { key: 'whatsapp', label: 'WhatsApp', href: contact?.whatsapp },
+    { key: 'whatsapp', label: 'WhatsApp', href: whatsappLink(settings) },
     { key: 'maps', label: 'Find us', href: contact?.mapsUrl },
   ] as const
 
@@ -26,15 +31,29 @@ export function Footer({ contact }: { contact?: Contact }) {
           {links
             .filter((link) => link.href)
             .map((link) => (
-              <a key={link.key} href={link.href} target="_blank" rel="noreferrer" aria-label={link.label}>
+              <a
+                key={link.key}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={link.label}
+                onClick={() => {
+                  if (link.key === 'whatsapp') track(EVENTS.whatsappClick, { location: 'footer' })
+                }}
+              >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d={ICONS[link.key]} />
                 </svg>
               </a>
             ))}
         </div>
-        {contact?.address && <p className="eyebrow">{contact.address}</p>}
-        <p className="eyebrow">Maestro. Modern merchandising, responsible impact.</p>
+        <img className="footer-logo" src="/logo.png" alt={siteName} width={2000} height={300} />
+        <p className="eyebrow copyright">
+          {/* Read at render, so the year is right without anyone remembering it. */}
+          <span>{`© ${new Date().getFullYear()} ${siteName}`}</span>
+          <span aria-hidden="true">|</span>
+          <span>All rights reserved</span>
+        </p>
       </div>
     </footer>
   )
