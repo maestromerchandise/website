@@ -33,15 +33,17 @@ export function ProductGrid({ products, settings, selected, onSelect, onClose }:
         // tile rather than being trapped inside one cell's width.
         return (
           <Fragment key={product.id}>
+            {/* The reference prints the product name above its photograph, and
+                keeps the tile to a name and an image only. The tagline and the
+                copy belong to the detail panel. */}
             <button
               type="button"
               className="product-card"
               aria-expanded={isOpen}
               onClick={() => (isOpen ? onClose() : onSelect(product))}
             >
-              <Thumb source={product.image} alt={product.title} width={240} />
               <span className="name">{product.title}</span>
-              {product.tagline && <span className="card-tagline">{product.tagline}</span>}
+              <Thumb source={product.image} alt={product.title} width={240} />
             </button>
 
             {isOpen && <ProductDetail product={product} settings={settings} onClose={onClose} />}

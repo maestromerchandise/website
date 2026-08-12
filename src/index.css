@@ -422,27 +422,32 @@ a {
 .product-card .thumb {
   aspect-ratio: 1;
   width: 100%;
+  background: none;
 }
 
+/* The photograph lifts on hover, as though it were floating off the page.
+   Transform and opacity only, so the tile never triggers layout mid-animation. */
 .product-card .thumb img {
-  transition: transform 0.4s ease;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), filter 0.45s ease;
 }
 
-.product-card:hover .thumb img {
-  transform: scale(1.05);
+.product-card:hover .thumb img,
+.product-card:focus-visible .thumb img {
+  transform: translateY(-10px) scale(1.03);
+  filter: drop-shadow(0 14px 18px rgb(60 48 38 / 0.16));
 }
 
+/* The name sits above the photograph, as printed in the reference. */
 .product-card .name {
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text);
+  transition: color 0.2s ease;
 }
 
-.card-tagline {
-  margin-top: -0.5rem;
-  font-size: 0.75rem;
-  color: var(--text-faint);
+.product-card:hover .name {
+  color: var(--text-body);
 }
 
 /* Placeholder tile, used until real photography is loaded into Sanity. */
