@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CategoryStrip } from './components/CategoryStrip'
 import { ChatWidget } from './components/ChatWidget'
 import { ContactForm } from './components/ContactForm'
@@ -6,13 +6,15 @@ import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { LogoMarquee } from './components/LogoMarquee'
 import { ProductGrid } from './components/ProductGrid'
-import { ProductModal } from './components/ProductModal'
-import { CATEGORIES, type Product } from './lib/sanity'
+import { Section } from './components/Section'
+import { WhatsAppButton } from './components/WhatsAppButton'
+import { EVENTS, initAnalytics, track } from './lib/analytics'
+import { FALLBACK_CATEGORIES, hasOwnSection } from './lib/categories'
+import type { Product } from './lib/sanity'
+import { scrollToSection } from './lib/scroll'
+import { applySeo } from './lib/seo'
 import { useSiteContent } from './lib/useSiteContent'
-
-const CUSTOM_COPY =
-  'Elevate your brand through bespoke merchandise and refined gifting solutions. ' +
-  'Contact us to discuss your requirements and explore limitless customisation possibilities.'
+import { whatsappLink } from './lib/whatsapp'
 
 function matches(product: Product, query: string): boolean {
   const haystack = [product.title, product.tagline, product.description].join(' ').toLowerCase()
@@ -24,22 +26,71 @@ export default function App() {
   const [selected, setSelected] = useState<Product>()
   const [query, setQuery] = useState('')
 
+  const settings = content?.settings
   const homepage = content?.homepage
-  const products = (content?.products ?? []).filter((product) => !query || matches(product, query))
+  const all = content?.products ?? []
+  const categories = content?.categories?.length ? content.categories : FALLBACK_CATEGORIES
+
+  useEffect(() => {
+    initAnalytics('Home')
+  }, [])
+
+  useEffect(() => {
+    if (content) applySeo(homepage?.seo, settings, '/')
+  }, [content, homepage, settings])
+
+  const products = all.filter((product) => !query || matches(product, query))
   const readyMade = products.filter((product) => product.readyMade)
-  const whatsapp = homepage?.contact?.whatsapp
+  const boxes = products.filter((product) => product.category === 'box')
+  const generalWhatsapp = whatsappLink(settings)
+  const isSearching = query.trim().length > 0
+
+  /** Shared by Custom Gift and Custom Box, which offer the same two actions. */
+  const customCta = (event: typeof EVENTS.customGiftCta | typeof EVENTS.customBoxCta) => (
+    <div className="custom-cta">
+      <button
+        type="button"
+        className="button"
+        onClick={() => {
+          track(event, { action: 'contact' })
+          scrollToSection('/#contact')
+        }}
+      >
+        Discuss your project
+      </button>
+      {generalWhatsapp && (
+        <a
+          className="button button-ghost"
+          href={generalWhatsapp}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => track(EVENTS.whatsappClick, { location: event })}
+        >
+          Message us on WhatsApp
+        </a>
+      )}
+    </div>
+  )
+
+  function openProduct(product: Product, location: 'category' | 'ready_made' | 'custom_box') {
+    setSelected(product)
+    track(location === 'ready_made' ? EVENTS.readyMadeOpen : EVENTS.productOpen, {
+      product: product.title,
+      location,
+    })
+  }
 
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <Header search={{ value: query, onChange: setQuery }} />
+      <Header settings={settings} search={{ value: query, onChange: setQuery }} />
 
       <main id="main">
         <div className="tagline">
           <p className="eyebrow">{homepage?.heroTitle ?? 'Modern merchandising. Responsible impact'}</p>
-          <p className="eyebrow">
+          <p className="eyebrow tagline-sub">
             {homepage?.heroSubtitle ?? 'Premium corporate & sustainable branding solutions'}
           </p>
         </div>
@@ -47,101 +98,91 @@ export default function App() {
         {isLoading && <p className="notice">Loading catalogue</p>}
         {error && <p className="notice">The catalogue could not be loaded. Please refresh the page.</p>}
 
-        <CategoryStrip products={content?.products ?? []} />
+        <CategoryStrip categories={categories} products={all} />
 
         {homepage?.clientLogos && homepage.clientLogos.length > 0 && (
-          <section className="section">
-            <div className="shell section-heading">
-              <h2 className="eyebrow">Our satisfied clients</h2>
-            </div>
-            <div className="shell">
-              <LogoMarquee logos={homepage.clientLogos} />
-            </div>
-          </section>
+          <Section heading={homepage.clientsSection?.heading ?? 'Our satisfied clients'} bleed>
+            <LogoMarquee logos={homepage.clientLogos} />
+          </Section>
         )}
 
-        {CATEGORIES.map((category) => {
-          const inCategory = products.filter((product) => product.category === category.id)
-          if (inCategory.length === 0) return null
-          return (
-            <section key={category.id} id={category.id} className="section shell">
-              <div className="section-heading">
-                <h2 className="eyebrow">{category.label}</h2>
-              </div>
-              <ProductGrid products={inCategory} onSelect={setSelected} />
-            </section>
-          )
-        })}
+        {isSearching && products.length === 0 && <p className="notice">No products match that search.</p>}
+
+        <div id="products">
+          {categories.filter(hasOwnSection).map((category) => {
+            const inCategory = products.filter((product) => product.category === category.id)
+            if (inCategory.length === 0) return null
+            return (
+              <Section key={category.id} id={category.id} heading={category.label}>
+                <ProductGrid
+                  products={inCategory}
+                  settings={settings}
+                  selected={selected}
+                  onSelect={(product) => openProduct(product, 'category')}
+                  onClose={() => setSelected(undefined)}
+                />
+              </Section>
+            )
+          })}
+        </div>
 
         {readyMade.length > 0 && (
-          <section id="ready-made" className="section shell">
-            <div className="section-heading">
-              <h2 className="eyebrow">Ready-Made</h2>
-            </div>
-            <ProductGrid products={readyMade} onSelect={setSelected} />
-          </section>
+          <Section id="ready-made" heading={homepage?.readyMadeSection?.heading ?? 'Ready-Made'}>
+            <ProductGrid
+              products={readyMade}
+              settings={settings}
+              selected={selected}
+              onSelect={(product) => openProduct(product, 'ready_made')}
+              onClose={() => setSelected(undefined)}
+            />
+          </Section>
         )}
 
-        <section id="custom-gift" className="section">
-          <div className="shell section-heading">
-            <h2 className="eyebrow">Custom Gift</h2>
-          </div>
-          <CategoryStrip products={content?.products ?? []} />
-          <div className="shell section-heading">
-            <p>{CUSTOM_COPY}</p>
-            {whatsapp && (
-              <a className="button" href={whatsapp} target="_blank" rel="noreferrer">
-                Discuss on WhatsApp
-              </a>
-            )}
-          </div>
-        </section>
+        <Section
+          id="custom-gift"
+          heading={homepage?.customGiftSection?.heading ?? 'Custom Gift'}
+          intro={homepage?.customGiftSection?.intro}
+          bleed
+        >
+          <CategoryStrip categories={categories} products={all} hideEmpty />
+          <div className="shell">{customCta(EVENTS.customGiftCta)}</div>
+        </Section>
 
-        <section id="custom-box" className="section shell">
-          <div className="section-heading">
-            <h2 className="eyebrow">Custom Box</h2>
-          </div>
+        <Section
+          id="custom-box"
+          heading={homepage?.customBoxSection?.heading ?? 'Custom Box'}
+          intro={homepage?.customBoxSection?.intro}
+        >
           <ProductGrid
-            products={products.filter((product) => product.category === 'box')}
-            onSelect={setSelected}
+            products={boxes}
+            settings={settings}
+            selected={selected}
+            onSelect={(product) => openProduct(product, 'custom_box')}
+            onClose={() => setSelected(undefined)}
           />
-          <div className="section-heading" style={{ marginTop: '2.5rem' }}>
-            <p>{CUSTOM_COPY}</p>
-            {whatsapp && (
-              <a className="button" href={whatsapp} target="_blank" rel="noreferrer">
-                Discuss on WhatsApp
-              </a>
-            )}
-          </div>
-        </section>
+          {customCta(EVENTS.customBoxCta)}
+        </Section>
 
-        <section id="contact" className="section shell">
-          <div className="section-heading">
-            <h2 className="eyebrow">Get in touch</h2>
-          </div>
+        <Section id="contact" heading={homepage?.contactSection?.heading ?? 'Get in touch'}>
           <div className="contact">
-            <ContactForm />
-            <div>
-              {homepage?.contact?.address && <p>{homepage.contact.address}</p>}
-              {homepage?.contact?.email && (
-                <p>
-                  <a href={`mailto:${homepage.contact.email}`}>{homepage.contact.email}</a>
-                </p>
-              )}
-              {whatsapp && (
-                <a className="button button-ghost" href={whatsapp} target="_blank" rel="noreferrer">
-                  Message us on WhatsApp
-                </a>
-              )}
+            <div className="contact-lead">
+              <p className="display">
+                {homepage?.contactLead?.title ?? 'We do more than create merchandise'}
+              </p>
+              <p className="eyebrow">{homepage?.contactLead?.subtitle ?? 'End to end service'}</p>
             </div>
+
+            <ContactForm settings={settings} />
           </div>
-        </section>
+        </Section>
       </main>
 
-      <Footer contact={homepage?.contact} />
-      <ChatWidget faq={homepage?.faq ?? []} />
+      <Footer settings={settings} />
+      <div className="floating-stack">
+        <WhatsAppButton settings={settings} />
+        <ChatWidget faq={homepage?.faq ?? []} />
+      </div>
 
-      {selected && <ProductModal product={selected} onClose={() => setSelected(undefined)} />}
     </>
   )
 }

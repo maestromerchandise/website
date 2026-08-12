@@ -1,8 +1,12 @@
+import { useEffect } from 'react'
 import { ChatWidget } from './components/ChatWidget'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { Thumb } from './components/Thumb'
+import { WhatsAppButton } from './components/WhatsAppButton'
+import { initAnalytics } from './lib/analytics'
 import type { TitledEntry } from './lib/sanity'
+import { applySeo } from './lib/seo'
 import { useSiteContent } from './lib/useSiteContent'
 
 function EntryList({ heading, entries }: { heading: string; entries: TitledEntry[] }) {
@@ -24,35 +28,47 @@ function EntryList({ heading, entries }: { heading: string; entries: TitledEntry
 
 export default function About() {
   const { content, error, isLoading } = useSiteContent()
-  const homepage = content?.homepage
+  const settings = content?.settings
+  const about = content?.about
+
+  useEffect(() => {
+    initAnalytics('About')
+  }, [])
+
+  useEffect(() => {
+    if (content) applySeo(about?.seo, settings, '/about/')
+  }, [content, about, settings])
 
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <Header />
+      <Header settings={settings} />
 
       <main id="main" className="shell section">
         {isLoading && <p className="notice">Loading</p>}
         {error && <p className="notice">This page could not be loaded. Please refresh.</p>}
 
         <section className="about-block">
-          <h1 className="eyebrow">About Us</h1>
+          <h1 className="eyebrow">{about?.heading ?? 'About Us'}</h1>
           <div>
-            {homepage?.about?.split('\n\n').map((paragraph) => (
+            {about?.body?.split('\n\n').map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
-            {homepage?.aboutImage && <Thumb source={homepage.aboutImage} alt="Maestro" width={640} />}
+            {about?.image && <Thumb source={about.image} alt="Maestro" width={640} />}
           </div>
         </section>
 
-        <EntryList heading="Why Choose Us" entries={homepage?.whyChooseUs ?? []} />
-        <EntryList heading="Our Service" entries={homepage?.services ?? []} />
+        <EntryList heading="Why Choose Us" entries={about?.whyChooseUs ?? []} />
+        <EntryList heading="Our Service" entries={about?.services ?? []} />
       </main>
 
-      <Footer contact={homepage?.contact} />
-      <ChatWidget faq={homepage?.faq ?? []} />
+      <Footer settings={settings} />
+      <div className="floating-stack">
+        <WhatsAppButton settings={settings} />
+        <ChatWidget faq={content?.homepage?.faq ?? []} />
+      </div>
     </>
   )
 }
