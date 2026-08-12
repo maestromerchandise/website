@@ -1,4 +1,4 @@
-import { config } from './config'
+import { config, isPreview } from './config'
 
 /**
  * Read access to the Sanity Content Lake.
@@ -9,38 +9,25 @@ import { config } from './config'
  * `@sanity/image-url` is not needed either.
  */
 
-export type Category =
-  | 'eco-essentials'
-  | 'travel-essentials'
-  | 'sports'
-  | 'smart-tech'
-  | 'office'
-  | 'home-living'
-  | 'automotive'
-  | 'apparel-wearables'
-  | 'box'
-
-export const CATEGORIES: { id: Category; label: string }[] = [
-  { id: 'eco-essentials', label: 'Eco Essentials' },
-  { id: 'travel-essentials', label: 'Travel Essentials' },
-  { id: 'sports', label: 'Sports' },
-  { id: 'smart-tech', label: 'Smart & Tech' },
-  { id: 'office', label: 'Office' },
-  { id: 'home-living', label: 'Home & Living' },
-  { id: 'automotive', label: 'Automotive' },
-  { id: 'apparel-wearables', label: 'Apparel & Wearables' },
-  { id: 'box', label: 'Box' },
-]
+export type Category = {
+  id: string
+  label: string
+  /** The section this category scrolls to, which is its own id unless overridden. */
+  anchor: string
+  image?: string
+  showInStrip: boolean
+}
 
 export type Product = {
   id: string
   title: string
-  category: Category
+  category: string
   tagline?: string
   description?: string
   features?: string[]
   specifications?: string[]
-  colors?: { name: string; hex: string }[]
+  /** A colour may carry its own photograph, which replaces the main image when picked. */
+  colors?: { name: string; hex: string; image?: string }[]
   readyMade?: boolean
   image?: string
   gallery?: string[]
@@ -61,62 +48,168 @@ export type FaqEntry = {
   answer: string
 }
 
+export type Seo = {
+  metaTitle?: string
+  metaDescription?: string
+  ogTitle?: string
+  ogDescription?: string
+  ogImage?: string
+  canonicalUrl?: string
+  noIndex?: boolean
+}
+
+export type SectionCopy = {
+  heading?: string
+  intro?: string
+}
+
 export type Contact = {
-  whatsapp?: string
+  address?: string
+  email?: string
+  phone?: string
   instagram?: string
   tiktok?: string
   mapsUrl?: string
-  address?: string
-  email?: string
+}
+
+export type SiteSettings = {
+  siteUrl?: string
+  siteName?: string
+  mastheadText?: string
+  whatsappNumber?: string
+  whatsappDefaultMessage?: string
+  whatsappProductMessage?: string
+  enquiryEmail?: string
+  enquirySubject?: string
+  contact?: Contact
+  navigation?: { label: string; href: string }[]
+  footerNote?: string
+  defaultSeo?: Seo
 }
 
 export type Homepage = {
   heroTitle?: string
   heroSubtitle?: string
-  about?: string
-  aboutImage?: string
+  clientsSection?: SectionCopy
+  readyMadeSection?: SectionCopy
+  customGiftSection?: SectionCopy
+  customBoxSection?: SectionCopy
+  contactSection?: SectionCopy
+  contactLead?: { title?: string; subtitle?: string }
+  featuredProducts?: string[]
+  clientLogos?: ClientLogo[]
+  faq?: FaqEntry[]
+  seo?: Seo
+}
+
+export type AboutPage = {
+  heading?: string
+  body?: string
+  image?: string
   whyChooseUs?: TitledEntry[]
   services?: TitledEntry[]
-  faq?: FaqEntry[]
-  clientLogos?: ClientLogo[]
-  contact?: Contact
+  seo?: Seo
 }
 
 export type SiteContent = {
+  settings: SiteSettings | null
   homepage: Homepage | null
+  about: AboutPage | null
+  categories: Category[]
   products: Product[]
 }
 
+const SEO_FIELDS = `
+  metaTitle,
+  metaDescription,
+  ogTitle,
+  ogDescription,
+  "ogImage": ogImage.asset->url,
+  canonicalUrl,
+  noIndex
+`
+
 const PRODUCT_FIELDS = `
-  "id": _id,
+  "id": coalesce(slug.current, _id),
   title,
-  category,
+  "category": category->slug.current,
   tagline,
   description,
   features,
   specifications,
-  colors[]{name, hex},
+  colors[]{name, hex, "image": image.asset->url},
   readyMade,
   "image": image.asset->url,
   "gallery": gallery[].asset->url
 `
 
 const QUERY = `{
+  "settings": *[_type == "siteSettings"][0]{
+    siteUrl,
+    siteName,
+    mastheadText,
+    whatsappNumber,
+    whatsappDefaultMessage,
+    whatsappProductMessage,
+    enquiryEmail,
+    enquirySubject,
+    contact,
+    navigation[]{label, href},
+    footerNote,
+    "defaultSeo": defaultSeo{${SEO_FIELDS}}
+  },
   "homepage": *[_type == "homepage"][0]{
     heroTitle,
     heroSubtitle,
-    about,
-    "aboutImage": aboutImage.asset->url,
+    clientsSection,
+    readyMadeSection,
+    customGiftSection,
+    customBoxSection,
+    contactSection,
+    contactLead,
+    "featuredProducts": featuredProducts[]->coalesce(slug.current, _id),
+    clientLogos[]{name, "image": image.asset->url},
+    faq[]{question, answer},
+    "seo": seo{${SEO_FIELDS}}
+  },
+  "about": *[_type == "aboutPage"][0]{
+    heading,
+    body,
+    "image": image.asset->url,
     whyChooseUs[]{title, body},
     services[]{title, body},
-    faq[]{question, answer},
-    clientLogos[]{name, "image": image.asset->url},
-    contact
+    "seo": seo{${SEO_FIELDS}}
+  },
+  "categories": *[_type == "productCategory"] | order(order asc, title asc){
+    "id": slug.current,
+    "label": title,
+    "anchor": coalesce(anchorOverride, slug.current),
+    "image": coverImage.asset->url,
+    "showInStrip": coalesce(showInStrip, true)
   },
   "products": *[_type == "product"] | order(order asc, title asc){${PRODUCT_FIELDS}}
 }`
 
+/** An empty result is still a valid shape, so every consumer can read it safely. */
+function normalise(result: Partial<SiteContent> | null): SiteContent {
+  return {
+    settings: result?.settings ?? null,
+    homepage: result?.homepage ?? null,
+    about: result?.about ?? null,
+    categories: result?.categories ?? [],
+    products: result?.products ?? [],
+  }
+}
+
 export async function fetchSiteContent(signal?: AbortSignal): Promise<SiteContent> {
+  if (isPreview) {
+    // Fetched over the dev server rather than imported, so the seed never joins
+    // the module graph. A dynamic `import()` would make Rollup emit it as an
+    // orphan chunk in `dist/`, dead but still uploaded to the host.
+    const response = await fetch('/content/seed.json', { signal })
+    return normalise((await response.json()) as Partial<SiteContent>)
+  }
+
   // apicdn is the cached read endpoint. The uncached `api` host is only needed
   // for writes and for reads that must never be a few seconds stale.
   const endpoint =
@@ -129,6 +222,6 @@ export async function fetchSiteContent(signal?: AbortSignal): Promise<SiteConten
     throw new Error(`Sanity request failed (${response.status})`)
   }
 
-  const { result } = (await response.json()) as { result: SiteContent | null }
-  return { homepage: result?.homepage ?? null, products: result?.products ?? [] }
+  const { result } = (await response.json()) as { result: Partial<SiteContent> | null }
+  return normalise(result)
 }

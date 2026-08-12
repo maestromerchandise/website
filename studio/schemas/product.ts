@@ -1,55 +1,64 @@
 import { defineField, defineType } from 'sanity'
 
-/** Kept in step with the Category union in ../../src/lib/sanity.ts. */
-export const CATEGORY_OPTIONS = [
-  { title: 'Eco Essentials', value: 'eco-essentials' },
-  { title: 'Travel Essentials', value: 'travel-essentials' },
-  { title: 'Sports', value: 'sports' },
-  { title: 'Smart & Tech', value: 'smart-tech' },
-  { title: 'Office', value: 'office' },
-  { title: 'Home & Living', value: 'home-living' },
-  { title: 'Automotive', value: 'automotive' },
-  { title: 'Apparel & Wearables', value: 'apparel-wearables' },
-  { title: 'Box', value: 'box' },
-]
-
 export const product = defineType({
   name: 'product',
   title: 'Product',
   type: 'document',
+  groups: [
+    { name: 'content', title: 'Content', default: true },
+    { name: 'media', title: 'Images' },
+    { name: 'placement', title: 'Placement' },
+  ],
   fields: [
     defineField({
       name: 'title',
       type: 'string',
+      group: 'content',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'slug',
+      type: 'slug',
+      group: 'content',
+      options: { source: 'title', maxLength: 60 },
+      description: 'Used as a stable identifier for this product.',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'category',
-      type: 'string',
-      options: { list: CATEGORY_OPTIONS },
+      type: 'reference',
+      group: 'content',
+      to: [{ type: 'productCategory' }],
+      description: 'Which section of the home page this product appears in.',
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'tagline',
       type: 'string',
+      group: 'content',
       description: 'The short line above the description, for example "One tool. Endless possibilities."',
     }),
-    defineField({ name: 'description', type: 'text', rows: 4 }),
+    defineField({ name: 'description', type: 'text', rows: 4, group: 'content' }),
     defineField({
       name: 'features',
       type: 'array',
       of: [{ type: 'string' }],
+      group: 'content',
       description: 'One bullet per line item.',
     }),
     defineField({
       name: 'specifications',
       type: 'array',
       of: [{ type: 'string' }],
+      group: 'content',
     }),
     defineField({
       name: 'colors',
       title: 'Colours',
       type: 'array',
+      group: 'content',
+      description:
+        'Each colour can carry its own photograph. Choosing the colour on the website then swaps the picture to match.',
       of: [
         {
           type: 'object',
@@ -61,15 +70,25 @@ export const product = defineType({
               description: 'For example #1A1A1A',
               validation: (rule) => rule.required().regex(/^#[0-9a-fA-F]{6}$/, { name: 'hex colour' }),
             },
+            {
+              name: 'image',
+              title: 'Photograph in this colour',
+              type: 'image',
+              options: { hotspot: true },
+              description:
+                'Shown when this colour is selected. Left empty, the main image stays on screen.',
+            },
           ],
-          preview: { select: { title: 'name', subtitle: 'hex' } },
+          preview: { select: { title: 'name', subtitle: 'hex', media: 'image' } },
         },
       ],
     }),
+
     defineField({
       name: 'image',
       title: 'Main image',
       type: 'image',
+      group: 'media',
       options: { hotspot: true },
       // Sanity resizes and re-encodes on delivery, so the original is uploaded
       // untouched and the website asks for the size it needs.
@@ -79,23 +98,28 @@ export const product = defineType({
       name: 'gallery',
       title: 'Detail images',
       type: 'array',
+      group: 'media',
       of: [{ type: 'image', options: { hotspot: true } }],
       description: 'Extra images shown in the product popup.',
     }),
+
     defineField({
       name: 'readyMade',
       title: 'Show in Ready-Made',
       type: 'boolean',
+      group: 'placement',
       initialValue: false,
     }),
     defineField({
       name: 'order',
       type: 'number',
+      group: 'placement',
       description: 'Lower numbers appear first within a category.',
       initialValue: 100,
     }),
   ],
+  orderings: [{ name: 'order', title: 'Display order', by: [{ field: 'order', direction: 'asc' }] }],
   preview: {
-    select: { title: 'title', subtitle: 'category', media: 'image' },
+    select: { title: 'title', subtitle: 'category.title', media: 'image' },
   },
 })
