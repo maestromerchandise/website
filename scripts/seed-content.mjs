@@ -8,8 +8,8 @@
  * Studio. To reseed a document, delete it there first.
  *
  * Plain fetch against the mutation API rather than @sanity/client, because this
- * is one POST and the script would otherwise be the only reason the repository
- * has a Sanity dependency at all.
+ * is one POST and the script would otherwise be the only reason the website
+ * package has a Sanity dependency at all.
  */
 import { readFile } from 'node:fs/promises'
 
@@ -29,7 +29,18 @@ if (!projectId || !token) {
 
 const seed = JSON.parse(await readFile(new URL('../content/seed.json', import.meta.url), 'utf8'))
 
+/** A category document id, referenced by every product in that category. */
+const categoryDocId = (id) => `category.${id}`
+
 const mutations = [
+  // Singletons take a fixed id, which is what pins them in the Studio structure.
+  {
+    createIfNotExists: {
+      _id: 'siteSettings',
+      _type: 'siteSettings',
+      ...withKeys(seed.settings),
+    },
+  },
   {
     createIfNotExists: {
       _id: 'homepage',
@@ -37,12 +48,35 @@ const mutations = [
       ...withKeys(seed.homepage),
     },
   },
-  ...seed.products.map(({ id, ...fields }) => ({
+  {
+    createIfNotExists: {
+      _id: 'aboutPage',
+      _type: 'aboutPage',
+      ...withKeys(seed.about),
+    },
+  },
+
+  ...seed.categories.map((category) => ({
+    createIfNotExists: {
+      _id: categoryDocId(category.id),
+      _type: 'productCategory',
+      title: category.label,
+      slug: { _type: 'slug', current: category.id },
+      // Only written when it differs, so an ordinary category stays unset.
+      ...(category.anchor !== category.id ? { anchorOverride: category.anchor } : {}),
+      showInStrip: category.showInStrip !== false,
+      order: category.order ?? 100,
+    },
+  })),
+
+  ...seed.products.map(({ id, category, ...fields }) => ({
     createIfNotExists: {
       // A deterministic id keeps the seed idempotent and keeps the document
       // recognisable in Studio.
       _id: `product.${id}`,
       _type: 'product',
+      slug: { _type: 'slug', current: id },
+      category: { _type: 'reference', _ref: categoryDocId(category) },
       ...withKeys(fields),
     },
   })),
@@ -62,7 +96,9 @@ if (!response.ok) {
   process.exit(1)
 }
 
-console.log(`Seeded 1 site content document and ${seed.products.length} products.`)
+console.log(
+  `Seeded 3 singletons, ${seed.categories.length} categories and ${seed.products.length} products.`,
+)
 
 /**
  * Sanity requires a _key on every object inside an array, or Studio cannot

@@ -1,9 +1,119 @@
 {
-  "_comment": "Copy transcribed from Web Maestro.pdf. Colour values are best guesses from the mockup swatches and should be corrected in Studio once the real finishes are confirmed. Images are added in Studio, not here.",
+  "settings": {
+    "siteUrl": "https://www.maestro.com",
+    "siteName": "Maestro",
+    "mastheadText": "www.maestro.com",
+    "whatsappNumber": "6281234567890",
+    "whatsappDefaultMessage": "Hello Maestro, I would like to ask about your merchandise.",
+    "whatsappProductMessage": "Hello Maestro, I would like to ask about {product}.",
+    "enquiryEmail": "hello@maestro.com",
+    "enquirySubject": "Website enquiry from {name}",
+    "contact": {
+      "address": "Branz Simatupang, Jl. TB Simatupang, Jakarta Selatan, Indonesia",
+      "email": "hello@maestro.com",
+      "instagram": "https://www.instagram.com/maestro.merchandise",
+      "tiktok": "https://www.tiktok.com/@maestro.merchandise",
+      "mapsUrl": "https://maps.google.com/?q=Branz+Simatupang+Jakarta"
+    },
+    "navigation": [
+      {
+        "label": "About Us",
+        "href": "/about/"
+      },
+      {
+        "label": "Ready-Made",
+        "href": "/#ready-made"
+      },
+      {
+        "label": "Custom Gift",
+        "href": "/#custom-gift"
+      },
+      {
+        "label": "Custom Box",
+        "href": "/#custom-box"
+      }
+    ],
+    "footerNote": "Maestro. Modern merchandising, responsible impact.",
+    "defaultSeo": {
+      "metaTitle": "Maestro | Premium Corporate and Sustainable Branding Solutions",
+      "metaDescription": "Maestro is a premium merchandising and brand solution company specialising in custom products, corporate merchandise, apparel, packaging and gifting solutions.",
+      "noIndex": false
+    }
+  },
   "homepage": {
     "heroTitle": "Modern merchandising. Responsible impact",
     "heroSubtitle": "Premium corporate & sustainable branding solutions",
-    "about": "Maestro is a premium merchandising and brand solution company, specialising in high quality custom products, corporate merchandise, apparel, packaging and gifting solutions.\n\nWe help brands transform their identity into refined physical products through thoughtful design, premium materials and professional production execution.\n\nWith a strong focus on aesthetics, craftsmanship and detail, we create merchandise that not only functions but strengthens brand perception and customer experience.",
+    "clientsSection": {
+      "heading": "Our satisfied clients"
+    },
+    "readyMadeSection": {
+      "heading": "Ready-Made"
+    },
+    "customGiftSection": {
+      "heading": "Custom Gift",
+      "intro": "Elevate your brand through bespoke merchandise and refined gifting solutions. Contact us to discuss your requirements and explore limitless customisation possibilities."
+    },
+    "customBoxSection": {
+      "heading": "Custom Box",
+      "intro": "Elevate your brand through bespoke merchandise and refined gifting solutions. Contact us to discuss your requirements and explore limitless customisation possibilities."
+    },
+    "contactSection": {
+      "heading": "Get in touch"
+    },
+    "contactLead": {
+      "title": "We do more than create merchandise",
+      "subtitle": "End to end service"
+    },
+    "clientLogos": [
+      {
+        "name": "BCA"
+      },
+      {
+        "name": "Lexus"
+      },
+      {
+        "name": "Mercedes-Benz"
+      },
+      {
+        "name": "Toyota"
+      },
+      {
+        "name": "BRANZ Simatupang"
+      },
+      {
+        "name": "A|X Armani Exchange"
+      }
+    ],
+    "faq": [
+      {
+        "question": "What is the minimum order quantity?",
+        "answer": "It depends on the product and the branding method. Send us your item and quantity on WhatsApp and we will confirm the minimum for that specific product."
+      },
+      {
+        "question": "Can you produce a fully custom item?",
+        "answer": "Yes. We support the full path from concept development and material sourcing through prototyping to production and quality control."
+      },
+      {
+        "question": "How long does production take?",
+        "answer": "Lead time varies with quantity, customisation and packaging. Share your deadline with your enquiry and we will tell you what is achievable."
+      },
+      {
+        "question": "Do you provide custom packaging?",
+        "answer": "Yes. We produce rigid boxes, premium packaging systems, paper bags, inserts and full presentation kits."
+      },
+      {
+        "question": "How do I request a quotation?",
+        "answer": "Use the form on this page or message us on WhatsApp with your product, quantity and timeline."
+      }
+    ],
+    "seo": {
+      "metaTitle": "Maestro | Premium Corporate and Sustainable Branding Solutions",
+      "metaDescription": "Modern merchandising, responsible impact. Custom products, corporate merchandise, apparel, packaging and gifting solutions."
+    }
+  },
+  "about": {
+    "heading": "About Us",
+    "body": "Maestro is a premium merchandising and brand solution company, specialising in high quality custom products, corporate merchandise, apparel, packaging and gifting solutions.\n\nWe help brands transform their identity into refined physical products through thoughtful design, premium materials and professional production execution.\n\nWith a strong focus on aesthetics, craftsmanship and detail, we create merchandise that not only functions but strengthens brand perception and customer experience.",
     "whyChooseUs": [
       {
         "title": "Premium quality",
@@ -52,29 +162,76 @@
         "body": "Creative merchandise development for automotive, hospitality, transportation, sports, luxury and lifestyle brands."
       }
     ],
-    "faq": [
-      {
-        "question": "What is the minimum order quantity?",
-        "answer": "It depends on the product and the branding method. Send us your item and quantity on WhatsApp and we will confirm the minimum for that specific product."
-      },
-      {
-        "question": "Can you produce a fully custom item?",
-        "answer": "Yes. We support the full path from concept development and material sourcing through prototyping to production and quality control."
-      },
-      {
-        "question": "How long does production take?",
-        "answer": "Lead time varies with quantity, customisation and packaging. Share your deadline with your enquiry and we will tell you what is achievable."
-      },
-      {
-        "question": "Do you provide custom packaging?",
-        "answer": "Yes. We produce rigid boxes, premium packaging systems, paper bags, inserts and full presentation kits."
-      },
-      {
-        "question": "How do I request a quotation?",
-        "answer": "Use the form on this page or message us on WhatsApp with your product, quantity and timeline."
-      }
-    ]
+    "seo": {
+      "metaTitle": "About Us | Maestro",
+      "metaDescription": "Maestro turns brand identity into refined physical products through thoughtful design, premium materials and professional production execution."
+    }
   },
+  "categories": [
+    {
+      "id": "eco-essentials",
+      "label": "Eco Essentials",
+      "anchor": "eco-essentials",
+      "showInStrip": true,
+      "order": 10
+    },
+    {
+      "id": "travel-essentials",
+      "label": "Travel Essentials",
+      "anchor": "travel-essentials",
+      "showInStrip": true,
+      "order": 20
+    },
+    {
+      "id": "sports",
+      "label": "Sports",
+      "anchor": "sports",
+      "showInStrip": true,
+      "order": 30
+    },
+    {
+      "id": "smart-tech",
+      "label": "Smart & Tech",
+      "anchor": "smart-tech",
+      "showInStrip": true,
+      "order": 40
+    },
+    {
+      "id": "office",
+      "label": "Office",
+      "anchor": "office",
+      "showInStrip": true,
+      "order": 50
+    },
+    {
+      "id": "home-living",
+      "label": "Home & Living",
+      "anchor": "home-living",
+      "showInStrip": true,
+      "order": 60
+    },
+    {
+      "id": "automotive",
+      "label": "Automotive",
+      "anchor": "automotive",
+      "showInStrip": true,
+      "order": 70
+    },
+    {
+      "id": "apparel-wearables",
+      "label": "Apparel & Wearables",
+      "anchor": "apparel-wearables",
+      "showInStrip": true,
+      "order": 80
+    },
+    {
+      "id": "box",
+      "label": "Box",
+      "anchor": "custom-box",
+      "showInStrip": true,
+      "order": 90
+    }
+  ],
   "products": [
     {
       "id": "hydrate-smarter-bottle",
@@ -95,7 +252,12 @@
         "Double wall vacuum insulation",
         "Hot and cold temperature retention"
       ],
-      "colors": [{ "name": "White", "hex": "#F5F3F0" }],
+      "colors": [
+        {
+          "name": "White",
+          "hex": "#F5F3F0"
+        }
+      ],
       "readyMade": true,
       "order": 10
     },
@@ -118,11 +280,26 @@
         "Hot and cold temperature retention"
       ],
       "colors": [
-        { "name": "Brushed Silver", "hex": "#C9C7C4" },
-        { "name": "Graphite", "hex": "#5A5A5C" },
-        { "name": "Forest Green", "hex": "#1F3A2E" },
-        { "name": "Deep Red", "hex": "#7C1F22" },
-        { "name": "Charcoal", "hex": "#3A3A3C" }
+        {
+          "name": "Brushed Silver",
+          "hex": "#C9C7C4"
+        },
+        {
+          "name": "Graphite",
+          "hex": "#5A5A5C"
+        },
+        {
+          "name": "Forest Green",
+          "hex": "#1F3A2E"
+        },
+        {
+          "name": "Deep Red",
+          "hex": "#7C1F22"
+        },
+        {
+          "name": "Charcoal",
+          "hex": "#3A3A3C"
+        }
       ],
       "readyMade": true,
       "order": 20
@@ -147,8 +324,14 @@
         "Hot and cold temperature retention"
       ],
       "colors": [
-        { "name": "Brushed Silver", "hex": "#C9C7C4" },
-        { "name": "Charcoal", "hex": "#3A3A3C" }
+        {
+          "name": "Brushed Silver",
+          "hex": "#C9C7C4"
+        },
+        {
+          "name": "Charcoal",
+          "hex": "#3A3A3C"
+        }
       ],
       "readyMade": true,
       "order": 30
@@ -172,7 +355,12 @@
         "304 stainless steel infuser",
         "BPA free"
       ],
-      "colors": [{ "name": "Charcoal", "hex": "#3A3A3C" }],
+      "colors": [
+        {
+          "name": "Charcoal",
+          "hex": "#3A3A3C"
+        }
+      ],
       "readyMade": true,
       "order": 40
     },
@@ -197,7 +385,12 @@
         "Reusable and easy maintenance",
         "Designed for travel, office and outdoor dining"
       ],
-      "colors": [{ "name": "Charcoal", "hex": "#3A3A3C" }],
+      "colors": [
+        {
+          "name": "Charcoal",
+          "hex": "#3A3A3C"
+        }
+      ],
       "readyMade": true,
       "order": 50
     },
@@ -222,7 +415,12 @@
         "Carry: integrated key ring",
         "Use: travel, camping, outdoor, everyday carry"
       ],
-      "colors": [{ "name": "Brushed Silver", "hex": "#C9C7C4" }],
+      "colors": [
+        {
+          "name": "Brushed Silver",
+          "hex": "#C9C7C4"
+        }
+      ],
       "readyMade": true,
       "order": 60
     },
@@ -250,10 +448,22 @@
         "Usage: travel, shopping, daily essential"
       ],
       "colors": [
-        { "name": "Bright Blue", "hex": "#1F6FD0" },
-        { "name": "Cyan", "hex": "#37B8CE" },
-        { "name": "Blush", "hex": "#E8A9A2" },
-        { "name": "Coral", "hex": "#E4705E" }
+        {
+          "name": "Bright Blue",
+          "hex": "#1F6FD0"
+        },
+        {
+          "name": "Cyan",
+          "hex": "#37B8CE"
+        },
+        {
+          "name": "Blush",
+          "hex": "#E8A9A2"
+        },
+        {
+          "name": "Coral",
+          "hex": "#E4705E"
+        }
       ],
       "readyMade": true,
       "order": 70
@@ -279,11 +489,441 @@
         "Colours: black and natural, or custom colours"
       ],
       "colors": [
-        { "name": "Natural", "hex": "#E4DCCD" },
-        { "name": "Black", "hex": "#1A1A1A" }
+        {
+          "name": "Natural",
+          "hex": "#E4DCCD"
+        },
+        {
+          "name": "Black",
+          "hex": "#1A1A1A"
+        }
       ],
       "readyMade": true,
       "order": 80
+    },
+    {
+      "id": "travel-organiser-case",
+      "title": "Travel Organiser Case",
+      "category": "travel-essentials",
+      "tagline": "Order in motion.",
+      "description": "A structured travel case that keeps cables, documents and daily essentials in their place from door to destination.",
+      "features": [
+        "Structured protective shell",
+        "Dedicated cable and card compartments",
+        "Water resistant outer fabric",
+        "Grab handle for cabin carry"
+      ],
+      "specifications": [
+        "Material: Water resistant polyester",
+        "Interior: Elastic organiser bands",
+        "Use: Cabin travel, business trips"
+      ],
+      "colors": [
+        {
+          "name": "Charcoal",
+          "hex": "#3A3A3C"
+        },
+        {
+          "name": "Sand",
+          "hex": "#CFC4B4"
+        }
+      ],
+      "readyMade": true,
+      "order": 20
+    },
+    {
+      "id": "universal-travel-adapter",
+      "title": "Universal Travel Adapter",
+      "category": "travel-essentials",
+      "tagline": "One adapter. Every destination.",
+      "description": "A compact worldwide adapter with multiple USB outputs, built for the traveller who carries one charger for every device.",
+      "features": [
+        "Worldwide plug compatibility",
+        "Multiple USB and USB-C outputs",
+        "Compact single unit body",
+        "Built in safety shutter"
+      ],
+      "specifications": [
+        "Coverage: More than 150 countries",
+        "Output: USB-A and USB-C",
+        "Safety: Fused with surge protection"
+      ],
+      "colors": [
+        {
+          "name": "White",
+          "hex": "#F5F3F0"
+        },
+        {
+          "name": "Black",
+          "hex": "#232323"
+        }
+      ],
+      "readyMade": true,
+      "order": 21
+    },
+    {
+      "id": "padel-racket",
+      "title": "Padel Racket",
+      "category": "sports",
+      "tagline": "Precision in play.",
+      "description": "A balanced padel racket finished for control and comfort, suited to corporate sports gifting and club activations.",
+      "features": [
+        "Balanced control profile",
+        "Shock absorbing core",
+        "Textured grip finish",
+        "Protective edge guard"
+      ],
+      "specifications": [
+        "Core: EVA foam",
+        "Surface: Carbon finish",
+        "Use: Club play, corporate sport events"
+      ],
+      "colors": [
+        {
+          "name": "Graphite",
+          "hex": "#2E2E30"
+        }
+      ],
+      "readyMade": false,
+      "order": 30
+    },
+    {
+      "id": "wireless-power-bank",
+      "title": "Wireless Power Bank",
+      "category": "smart-tech",
+      "tagline": "Power, quietly handled.",
+      "description": "A slim magnetic power bank that charges without a cable and disappears into a pocket between uses.",
+      "features": [
+        "Magnetic wireless charging",
+        "Slim aluminium body",
+        "Pass through wired output",
+        "LED charge indicator"
+      ],
+      "specifications": [
+        "Capacity: 10,000 mAh",
+        "Output: Wireless 15W, USB-C 20W",
+        "Finish: Anodised aluminium"
+      ],
+      "colors": [
+        {
+          "name": "Graphite",
+          "hex": "#2E2E30"
+        },
+        {
+          "name": "Silver",
+          "hex": "#C9C6C1"
+        }
+      ],
+      "readyMade": true,
+      "order": 40
+    },
+    {
+      "id": "wireless-earbuds",
+      "title": "Wireless Earbuds",
+      "category": "smart-tech",
+      "tagline": "Clarity, uninterrupted.",
+      "description": "Compact true wireless earbuds in a premium charging case, a dependable executive gift with everyday utility.",
+      "features": [
+        "True wireless pairing",
+        "Charging case included",
+        "Touch control surface",
+        "Noise isolating fit"
+      ],
+      "specifications": [
+        "Battery: Up to 24 hours with case",
+        "Connectivity: Bluetooth 5.3",
+        "Fit: Silicone tips, three sizes"
+      ],
+      "colors": [
+        {
+          "name": "White",
+          "hex": "#F5F3F0"
+        },
+        {
+          "name": "Black",
+          "hex": "#232323"
+        }
+      ],
+      "readyMade": true,
+      "order": 41
+    },
+    {
+      "id": "executive-notebook",
+      "title": "Executive Notebook",
+      "category": "office",
+      "tagline": "Considered, every page.",
+      "description": "A hardcover notebook with a refined cover material and clean binding, made for boardrooms and brand kits alike.",
+      "features": [
+        "Premium hardcover binding",
+        "Lay flat page block",
+        "Ribbon marker and elastic closure",
+        "Debossing and print ready"
+      ],
+      "specifications": [
+        "Size: A5",
+        "Pages: 192, ivory paper",
+        "Branding: Deboss, foil or screen print"
+      ],
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#232323"
+        },
+        {
+          "name": "Taupe",
+          "hex": "#9C8F82"
+        }
+      ],
+      "readyMade": false,
+      "order": 50
+    },
+    {
+      "id": "leather-card-holder",
+      "title": "Leather Card Holder",
+      "category": "office",
+      "tagline": "Understated, every day.",
+      "description": "A slim card holder in full grain leather, finished by hand and sized for the pocket rather than the bag.",
+      "features": [
+        "Full grain leather",
+        "Slim multi card profile",
+        "Hand finished edges",
+        "Ages into a personal patina"
+      ],
+      "specifications": [
+        "Material: Full grain leather",
+        "Capacity: Up to 6 cards",
+        "Branding: Blind deboss or foil"
+      ],
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#232323"
+        },
+        {
+          "name": "Cognac",
+          "hex": "#8B5A3C"
+        }
+      ],
+      "readyMade": true,
+      "order": 51
+    },
+    {
+      "id": "ceramic-diffuser",
+      "title": "Ceramic Reed Diffuser",
+      "category": "home-living",
+      "tagline": "Presence without noise.",
+      "description": "A ribbed ceramic diffuser that carries a scent quietly through a room, designed as much for the shelf as for the air.",
+      "features": [
+        "Hand finished ceramic vessel",
+        "Natural reed diffusion",
+        "Long lasting fragrance oil",
+        "Refillable design"
+      ],
+      "specifications": [
+        "Volume: 200 mL",
+        "Vessel: Glazed ceramic",
+        "Duration: Approximately 12 weeks"
+      ],
+      "colors": [
+        {
+          "name": "Off white",
+          "hex": "#EFEAE3"
+        }
+      ],
+      "readyMade": true,
+      "order": 60
+    },
+    {
+      "id": "tea-ceremony-set",
+      "title": "Tea Ceremony Set",
+      "category": "home-living",
+      "tagline": "A ritual, properly kept.",
+      "description": "A porcelain tea set with cups and a covered brewing bowl, presented as a considered gift for partners and clients.",
+      "features": [
+        "Porcelain brewing bowl and cups",
+        "Traditional proportions",
+        "Gift ready presentation",
+        "Dishwasher safe body"
+      ],
+      "specifications": [
+        "Material: Glazed porcelain",
+        "Set: One brewing bowl, four cups",
+        "Presentation: Rigid gift box"
+      ],
+      "colors": [
+        {
+          "name": "Celadon",
+          "hex": "#A8B5A2"
+        },
+        {
+          "name": "Indigo",
+          "hex": "#2C3E62"
+        }
+      ],
+      "readyMade": true,
+      "order": 61
+    },
+    {
+      "id": "car-key-pouch",
+      "title": "Car Key Pouch",
+      "category": "automotive",
+      "tagline": "Refined arrival.",
+      "description": "A leather key pouch shaped for modern car keys, a natural fit for dealership gifting and automotive brand collaborations.",
+      "features": [
+        "Full grain leather body",
+        "Shaped for modern key fobs",
+        "Snap closure",
+        "Deboss ready panel"
+      ],
+      "specifications": [
+        "Material: Full grain leather",
+        "Closure: Metal snap",
+        "Branding: Deboss or foil"
+      ],
+      "colors": [
+        {
+          "name": "Tan",
+          "hex": "#B98D5F"
+        },
+        {
+          "name": "Black",
+          "hex": "#232323"
+        }
+      ],
+      "readyMade": false,
+      "order": 70
+    },
+    {
+      "id": "corporate-polo-shirt",
+      "title": "Corporate Polo Shirt",
+      "category": "apparel-wearables",
+      "tagline": "Uniform, elevated.",
+      "description": "A structured polo in a breathable pique knit with contrast tipping, cut for teams that represent a brand in person.",
+      "features": [
+        "Breathable pique knit",
+        "Contrast collar tipping",
+        "Reinforced placket",
+        "Embroidery and print ready"
+      ],
+      "specifications": [
+        "Fabric: Cotton pique, 200 gsm",
+        "Sizes: XS to XXL",
+        "Branding: Embroidery, print or woven label"
+      ],
+      "colors": [
+        {
+          "name": "White",
+          "hex": "#F5F3F0"
+        },
+        {
+          "name": "Navy",
+          "hex": "#22304A"
+        }
+      ],
+      "readyMade": false,
+      "order": 80
+    },
+    {
+      "id": "rigid-gift-box",
+      "title": "Rigid Gift Box",
+      "category": "box",
+      "tagline": "The first thing they open.",
+      "description": "A rigid presentation box with a fitted lid and custom insert, built so the packaging carries as much intent as the product inside.",
+      "features": [
+        "Rigid board construction",
+        "Fitted lid and base",
+        "Custom foam or card insert",
+        "Foil, deboss and print finishes"
+      ],
+      "specifications": [
+        "Board: 1200 gsm greyboard",
+        "Wrap: Textured or soft touch paper",
+        "Insert: Die cut foam or card"
+      ],
+      "colors": [
+        {
+          "name": "Deep red",
+          "hex": "#8C2B24"
+        },
+        {
+          "name": "Forest",
+          "hex": "#2F4238"
+        },
+        {
+          "name": "Charcoal",
+          "hex": "#3A3A3C"
+        }
+      ],
+      "readyMade": false,
+      "order": 90
+    },
+    {
+      "id": "drawer-gift-box",
+      "title": "Drawer Gift Box",
+      "category": "box",
+      "tagline": "A considered reveal.",
+      "description": "A sliding drawer box that opens sideways into its contents, suited to executive gifting and multi item kits.",
+      "features": [
+        "Sliding drawer construction",
+        "Pull ribbon or finger notch",
+        "Contrast interior wrap",
+        "Multi item insert options"
+      ],
+      "specifications": [
+        "Board: 1200 gsm greyboard",
+        "Opening: Side drawer",
+        "Interior: Contrast paper wrap"
+      ],
+      "colors": [
+        {
+          "name": "Orange",
+          "hex": "#C4551F"
+        },
+        {
+          "name": "Charcoal",
+          "hex": "#3A3A3C"
+        },
+        {
+          "name": "Stone",
+          "hex": "#B9B4AC"
+        }
+      ],
+      "readyMade": false,
+      "order": 91
+    },
+    {
+      "id": "magnetic-closure-box",
+      "title": "Magnetic Closure Box",
+      "category": "box",
+      "tagline": "Closed with intent.",
+      "description": "A folding box with a concealed magnetic closure, flat packed for shipping and assembled in a single motion.",
+      "features": [
+        "Concealed magnetic closure",
+        "Flat pack for efficient shipping",
+        "Reinforced hinge edge",
+        "Full surface branding area"
+      ],
+      "specifications": [
+        "Board: 1000 gsm greyboard",
+        "Closure: Concealed magnets",
+        "Shipping: Flat packed"
+      ],
+      "colors": [
+        {
+          "name": "Navy",
+          "hex": "#22304A"
+        },
+        {
+          "name": "Black",
+          "hex": "#232323"
+        },
+        {
+          "name": "Slate",
+          "hex": "#7E8A93"
+        }
+      ],
+      "readyMade": false,
+      "order": 92
     }
   ]
 }
