@@ -5,7 +5,7 @@ import { wrapScroll } from '../lib/marquee'
 import type { ClientLogo } from '../lib/sanity'
 
 /** Slow enough to read a logo, fast enough to look alive. */
-const SPEED_PX_PER_FRAME = 0.4
+const SPEED_PX_PER_SECOND = 26
 
 /** Copies of the list needed to fill the track and still have room to wrap. */
 const MIN_COPIES = 2
@@ -28,6 +28,15 @@ export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
   const isPaused = useRef(false)
   const isDragging = useRef(false)
   const dragOrigin = useRef({ pointerX: 0, scrollLeft: 0 })
+  /**
+   * The scroll position as a float.
+   *
+   * `scrollLeft` rounds an assignment to a whole number, so writing `current +
+   * 0.4` every frame reads back unchanged and the strip never moves. The
+   * fraction is accumulated here and only whole pixels reach the element, which
+   * is what makes a slow drift possible at all.
+   */
+  const offsetRef = useRef(0)
   const [copies, setCopies] = useState(MIN_COPIES)
 
   // Measure one copy against the viewport and repeat until the track is at
@@ -57,11 +66,19 @@ export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
     if (!track) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    let frame = requestAnimationFrame(function step() {
-      // One lap is the track divided by however many copies it holds.
+    offsetRef.current = track.scrollLeft
+    let last = performance.now()
+
+    let frame = requestAnimationFrame(function step(now) {
+      // Advance by elapsed time rather than per frame, so the speed is the same
+      // on a 60Hz and a 120Hz screen.
+      const elapsed = Math.min(now - last, 100)
+      last = now
+
       const span = track.scrollWidth / copies
       if (!isPaused.current && span > 0) {
-        track.scrollLeft = wrapScroll(track.scrollLeft + SPEED_PX_PER_FRAME, span)
+        offsetRef.current = wrapScroll(offsetRef.current + (SPEED_PX_PER_SECOND * elapsed) / 1000, span)
+        track.scrollLeft = Math.round(offsetRef.current)
       }
       frame = requestAnimationFrame(step)
     })
@@ -82,7 +99,11 @@ export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
     const track = trackRef.current
     if (!track || !isDragging.current) return
     const travelled = event.clientX - dragOrigin.current.pointerX
-    track.scrollLeft = wrapScroll(dragOrigin.current.scrollLeft - travelled, track.scrollWidth / copies)
+    const next = wrapScroll(dragOrigin.current.scrollLeft - travelled, track.scrollWidth / copies)
+    // Keep the float in step with the drag, or the auto-advance resumes from
+    // wherever it left off and the strip jumps backwards under the finger.
+    offsetRef.current = next
+    track.scrollLeft = next
   }
 
   function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
