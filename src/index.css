@@ -381,10 +381,9 @@ a {
   overflow-x: auto;
   cursor: grab;
   scrollbar-width: none;
-  /* The page sets smooth scrolling for anchor navigation, which also applies to
-     every scrollLeft written from script. That turns each frame of the marquee
-     into its own animation, and the sub-pixel steps cancel out into a strip that
-     sits still. The auto-advance needs the write to land immediately. */
+  /* The page sets smooth scrolling for anchor navigation, which would otherwise
+     ease every frame the auto-advance writes. This scroller is driven from
+     script, so each write has to land where it was put. */
   scroll-behavior: auto;
   /* Horizontal drag is ours; vertical must stay with the page or the section
      becomes a scroll trap on touch devices. */
