@@ -32,17 +32,15 @@ export function ProductDetail({ product, settings, onClose }: Props) {
 
   const whatsapp = whatsappProductLink(settings, product.title)
 
-  // Bring the panel into view when it opens. Without this the detail can expand
-  // below the fold and read as nothing having happened.
+  // The panel opens where the product is, and the page stays put. Scrolling to
+  // it would move the catalogue out from under the tile that was just clicked,
+  // which is the one thing an in-page detail is meant to avoid.
+  //
+  // Focus still moves to the heading, because a keyboard or screen reader user
+  // has to be told the panel appeared. `preventScroll` is what keeps that from
+  // scrolling the page as a side effect.
   useEffect(() => {
-    const panel = panelRef.current
-    if (!panel) return
-
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    panel.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' })
-    // Focus the heading so a keyboard user lands on the new content rather than
-    // staying on the tile behind it.
-    panel.querySelector<HTMLElement>('h3')?.focus()
+    panelRef.current?.querySelector<HTMLElement>('h3')?.focus({ preventScroll: true })
   }, [product.id])
 
   // Escape closes, matching what the dialog used to do.
