@@ -161,21 +161,28 @@ a {
   background: var(--bg);
 }
 
-/* One row at every width above the mobile breakpoint: navigation, centred
-   wordmark, search. The columns are sized from their content so the logo stays
-   optically centred, and nothing is allowed to wrap onto a second line. */
+/* One row at every width above the mobile breakpoint: navigation hard left,
+   wordmark centred, search hard right. The outer columns are equal so the
+   wordmark sits on the true centre of the page, and the row spans the full
+   width rather than the narrower content shell, which is what pushes the
+   navigation and the search apart. */
 .header-bar {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: clamp(0.5rem, 2vw, 1.5rem);
+  gap: clamp(1.5rem, 6vw, 5rem);
+  /* Wider than the content shell, so the navigation and the search sit near the
+     edges of the page as they do in the reference rather than being pulled in
+     towards the wordmark. */
+  max-width: 1600px;
   padding-block: 0.9rem;
 }
 
 .header-nav {
   display: flex;
   flex-wrap: nowrap;
-  gap: clamp(0.6rem, 1.6vw, 1.5rem);
+  gap: clamp(0.75rem, 2.2vw, 2rem);
+  justify-content: flex-start;
   min-width: 0;
 }
 
@@ -211,17 +218,21 @@ a {
   justify-content: flex-end;
 }
 
+/* The reference shows a bare magnifier at the right edge, not a bordered field.
+   The input opens from it on focus, so the resting state matches the mockup and
+   the search is still reachable without a second page. */
 .search {
   display: flex;
   gap: 0.35rem;
   align-items: center;
-  width: min(10rem, 26vw);
-  padding: 0.3rem 0.55rem;
-  border: 1px solid var(--border);
+  padding: 0.3rem 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
 }
 
-.search:focus-within {
-  border-color: var(--text);
+.search:focus-within,
+.search:hover {
+  border-bottom-color: var(--border);
 }
 
 .search-icon {
@@ -230,7 +241,7 @@ a {
 }
 
 .search-field {
-  width: 100%;
+  width: 0;
   padding: 0;
   font: inherit;
   font-size: 0.75rem;
@@ -239,6 +250,15 @@ a {
   background: none;
   border: none;
   outline: none;
+  transition: width 0.25s ease;
+}
+
+/* Opens on focus, and stays open while it holds a query so the text a visitor
+   typed can never be hidden by the field collapsing under them. */
+.search-field:focus,
+.search-field:not(:placeholder-shown),
+.search:hover .search-field {
+  width: min(9rem, 22vw);
 }
 
 /* The hamburger replaces the inline nav under the mobile breakpoint. */
