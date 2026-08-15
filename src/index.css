@@ -926,15 +926,29 @@ a {
 }
 
 /* About page */
+/* About
+   A picture beside its copy, alternating sides down the page so the eye is
+   handed from one block to the next rather than running down one straight
+   column. Two explicit columns rather than auto-fit, because the sides only
+   swap if the tracks are known. */
 .about-block {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(2rem, 5vw, 4rem);
-  align-items: start;
+  align-items: center;
 }
 
 .about-block + .about-block {
   margin-top: clamp(3rem, 7vw, 5rem);
+}
+
+.about-block[data-flip] .about-media {
+  order: 2;
+}
+
+.about-media .thumb {
+  aspect-ratio: 4 / 3;
+  width: 100%;
 }
 
 .about-list {
@@ -965,6 +979,17 @@ a {
 @media (max-width: 48rem) {
   :root {
     --header-height: 4.5rem;
+  }
+
+  /* One column, and the picture always leads. Keeping the swap here would put
+     the image above one block's text and below the next, which reads as a
+     mistake rather than as a rhythm once the columns are stacked. */
+  .about-block {
+    grid-template-columns: 1fr;
+  }
+
+  .about-block[data-flip] .about-media {
+    order: 0;
   }
 
   .header-bar {

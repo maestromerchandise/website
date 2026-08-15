@@ -107,7 +107,9 @@ export type AboutPage = {
   body?: string
   image?: string
   whyChooseUs?: TitledEntry[]
+  whyChooseUsImage?: string
   services?: TitledEntry[]
+  servicesImage?: string
   seo?: Seo
 }
 
@@ -177,7 +179,9 @@ const QUERY = `{
     body,
     "image": image.asset->url,
     whyChooseUs[]{title, body},
+    "whyChooseUsImage": whyChooseUsImage.asset->url,
     services[]{title, body},
+    "servicesImage": servicesImage.asset->url,
     "seo": seo{${SEO_FIELDS}}
   },
   "categories": *[_type == "productCategory"] | order(order asc, title asc){

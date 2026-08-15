@@ -1,4 +1,6 @@
+import { motion, useReducedMotion } from 'motion/react'
 import { useEffect } from 'react'
+import type { ReactNode } from 'react'
 import { ChatWidget } from './components/ChatWidget'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
@@ -9,20 +11,59 @@ import type { TitledEntry } from './lib/sanity'
 import { applySeo } from './lib/seo'
 import { useSiteContent } from './lib/useSiteContent'
 
-function EntryList({ heading, entries }: { heading: string; entries: TitledEntry[] }) {
-  if (entries.length === 0) return null
+type BlockProps = {
+  heading: string
+  image?: string
+  /** Even blocks put the picture on the left, odd ones on the right. */
+  index: number
+  children: ReactNode
+}
+
+/**
+ * One About section: a picture beside its copy.
+ *
+ * The sides alternate down the page, so the eye is handed from one block to the
+ * next instead of running down a single straight column.
+ */
+function AboutBlock({ heading, image, index, children }: BlockProps) {
+  const prefersReducedMotion = useReducedMotion()
+  const isFlipped = index % 2 === 1
+
   return (
-    <section className="about-block">
-      <h2 className="eyebrow">{heading}</h2>
-      <div className="about-list">
-        {entries.map((entry) => (
-          <div key={entry.title}>
-            <h3>{entry.title}</h3>
-            <p>{entry.body}</p>
-          </div>
-        ))}
+    <motion.section
+      className="about-block"
+      data-flip={isFlipped || undefined}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="about-media">
+        <Thumb source={image} alt={heading} width={640} />
       </div>
-    </section>
+      <div className="about-body">
+        {/* The page needs exactly one h1, and it belongs to the opening block. */}
+        {index === 0 ? (
+          <h1 className="eyebrow">{heading}</h1>
+        ) : (
+          <h2 className="eyebrow">{heading}</h2>
+        )}
+        {children}
+      </div>
+    </motion.section>
+  )
+}
+
+function EntryList({ entries }: { entries: TitledEntry[] }) {
+  return (
+    <div className="about-list">
+      {entries.map((entry) => (
+        <div key={entry.title}>
+          <h3>{entry.title}</h3>
+          <p>{entry.body}</p>
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -39,6 +80,35 @@ export default function About() {
     if (content) applySeo(about?.seo, settings, '/about/')
   }, [content, about, settings])
 
+  // Built as a list so the alternating side comes from the position rather than
+  // being hardcoded per section, and a fourth block would follow the pattern.
+  const blocks = [
+    {
+      heading: about?.heading ?? 'About Us',
+      image: about?.image,
+      body: (
+        <>
+          {about?.body?.split('\n\n').map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </>
+      ),
+      isEmpty: !about?.body,
+    },
+    {
+      heading: 'Why Choose Us',
+      image: about?.whyChooseUsImage,
+      body: <EntryList entries={about?.whyChooseUs ?? []} />,
+      isEmpty: (about?.whyChooseUs ?? []).length === 0,
+    },
+    {
+      heading: 'Our Service',
+      image: about?.servicesImage,
+      body: <EntryList entries={about?.services ?? []} />,
+      isEmpty: (about?.services ?? []).length === 0,
+    },
+  ].filter((block) => !block.isEmpty)
+
   return (
     <>
       <a className="skip-link" href="#main">
@@ -50,18 +120,11 @@ export default function About() {
         {isLoading && <p className="notice">Loading</p>}
         {error && <p className="notice">This page could not be loaded. Please refresh.</p>}
 
-        <section className="about-block">
-          <h1 className="eyebrow">{about?.heading ?? 'About Us'}</h1>
-          <div>
-            {about?.body?.split('\n\n').map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-            {about?.image && <Thumb source={about.image} alt="Maestro" width={640} />}
-          </div>
-        </section>
-
-        <EntryList heading="Why Choose Us" entries={about?.whyChooseUs ?? []} />
-        <EntryList heading="Our Service" entries={about?.services ?? []} />
+        {blocks.map((block, index) => (
+          <AboutBlock key={block.heading} heading={block.heading} image={block.image} index={index}>
+            {block.body}
+          </AboutBlock>
+        ))}
       </main>
 
       <Footer settings={settings} />
