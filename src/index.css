@@ -230,14 +230,9 @@ a {
   transition: border-color 0.2s ease;
 }
 
-.search {
+.search:focus-within,
+.search:hover {
   border-bottom-color: var(--border);
-}
-
-/* The input suppresses its own outline, so this underline is the focus
-   indicator and has to carry real contrast rather than the resting hairline. */
-.search:focus-within {
-  border-bottom-color: var(--text);
 }
 
 .search-icon {
@@ -245,11 +240,8 @@ a {
   color: var(--text-faint);
 }
 
-/* Always open. A zero-width field that expands on hover has no hit area to
-   aim at, cannot be tapped on a touch screen and reads as a decorative icon,
-   which is exactly how a search nobody can find fails. */
 .search-field {
-  width: min(9rem, 22vw);
+  width: 0;
   padding: 0;
   font: inherit;
   font-size: 0.75rem;
@@ -258,6 +250,15 @@ a {
   background: none;
   border: none;
   outline: none;
+  transition: width 0.25s ease;
+}
+
+/* Opens on focus, and stays open while it holds a query so the text a visitor
+   typed can never be hidden by the field collapsing under them. */
+.search-field:focus,
+.search-field:not(:placeholder-shown),
+.search:hover .search-field {
+  width: min(9rem, 22vw);
 }
 
 /* The hamburger replaces the inline nav under the mobile breakpoint. */
