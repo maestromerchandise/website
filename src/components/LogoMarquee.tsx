@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react'
+import type { AnimationPlaybackControls } from 'motion/react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PointerEvent } from 'react'
 import { imageUrl } from '../lib/img'
 import { wrapOffset } from '../lib/marquee'
@@ -13,11 +15,15 @@ const MIN_COPIES = 2
 /**
  * Infinite, drag-scrollable client logo strip.
  *
- * Driven by `transform` on an inner track rather than by the container's
- * `scrollLeft`. `scrollLeft` snaps to whole pixels, so a slow drift advances
- * nothing for two frames and then jumps a pixel, which reads as a stutter no
- * matter how the timing is written. A transform takes sub-pixel values and is
- * composited, so the same speed is smooth and costs no layout per frame.
+ * The offset is a motion value written straight to `transform`, so the drift
+ * never rounds to whole pixels the way `scrollLeft` does, and it never
+ * re-renders React. Releasing a drag hands the pointer's velocity to an inertia
+ * animation, so the strip carries the throw and then eases back into the drift
+ * rather than stopping dead under the finger.
+ *
+ * One animation owns the offset at a time, tracked in `controls`. A drag stops
+ * whatever is running before taking over, because a drift left running would
+ * keep writing the offset and fight the finger.
  *
  * The list is repeated until the track is comfortably wider than the viewport.
  * Two copies is enough once there are a dozen logos, but a client list with
@@ -28,12 +34,37 @@ const MIN_COPIES = 2
 export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-  const isPaused = useRef(false)
+  const offset = useMotionValue(0)
+  const controls = useRef<AnimationPlaybackControls>(null)
   const isDragging = useRef(false)
   const dragOrigin = useRef({ pointerX: 0, offset: 0 })
-  /** Distance travelled, as a float. Whole pixels never reach the element. */
-  const offsetRef = useRef(0)
+  const prefersReducedMotion = useReducedMotion()
   const [copies, setCopies] = useState(MIN_COPIES)
+
+  /** The offset counts up as the strip travels; the track moves the other way. */
+  const x = useTransform(offset, (value) => -value)
+
+  /** One lap: the width of a single copy of the list. */
+  const lap = useCallback(() => (trackRef.current?.scrollWidth ?? 0) / copies, [copies])
+
+  const startDrift = useCallback(() => {
+    controls.current?.stop()
+    if (prefersReducedMotion) return
+
+    const span = lap()
+    if (span <= 0) return
+
+    // Restart from a wrapped position each time, so the value never grows
+    // without bound across a long session.
+    const from = wrapOffset(offset.get(), span)
+    offset.set(from)
+    controls.current = animate(offset, from + span, {
+      duration: span / SPEED_PX_PER_SECOND,
+      ease: 'linear',
+      repeat: Infinity,
+      repeatType: 'loop',
+    })
+  }, [lap, offset, prefersReducedMotion])
 
   // Measure one copy against the viewport and repeat until the track is at
   // least twice the visible width, so a lap is always longer than the screen.
@@ -60,51 +91,38 @@ export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
   }, [logos, copies])
 
   useEffect(() => {
-    const track = trackRef.current
-    if (!track) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    let last = performance.now()
-
-    let frame = requestAnimationFrame(function step(now) {
-      // Advance by elapsed time rather than per frame, so the speed matches on a
-      // 60Hz and a 120Hz screen. The clamp stops a backgrounded tab returning
-      // with a multi-second jump.
-      const elapsed = Math.min(now - last, 100)
-      last = now
-
-      const span = track.scrollWidth / copies
-      if (!isPaused.current && span > 0) {
-        offsetRef.current = wrapOffset(offsetRef.current + (SPEED_PX_PER_SECOND * elapsed) / 1000, span)
-        track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`
-      }
-      frame = requestAnimationFrame(step)
-    })
-
-    return () => cancelAnimationFrame(frame)
-  }, [copies])
+    startDrift()
+    return () => controls.current?.stop()
+  }, [startDrift])
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    controls.current?.stop()
     isDragging.current = true
-    isPaused.current = true
-    dragOrigin.current = { pointerX: event.clientX, offset: offsetRef.current }
+    dragOrigin.current = { pointerX: event.clientX, offset: offset.get() }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
-    const track = trackRef.current
-    if (!track || !isDragging.current) return
+    if (!isDragging.current) return
     const travelled = event.clientX - dragOrigin.current.pointerX
-    offsetRef.current = wrapOffset(dragOrigin.current.offset - travelled, track.scrollWidth / copies)
-    track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`
+    offset.set(wrapOffset(dragOrigin.current.offset - travelled, lap()))
   }
 
   function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
+    if (!isDragging.current) return
     isDragging.current = false
-    isPaused.current = false
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId)
     }
+
+    // Carry the throw, then hand the strip back to the drift.
+    controls.current = animate(offset, offset.get(), {
+      type: 'inertia',
+      velocity: offset.getVelocity(),
+      power: 0.3,
+      timeConstant: 200,
+      onComplete: startDrift,
+    })
   }
 
   if (logos.length === 0) return null
@@ -119,12 +137,8 @@ export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      onMouseEnter={() => (isPaused.current = true)}
-      onMouseLeave={() => {
-        if (!isDragging.current) isPaused.current = false
-      }}
     >
-      <div ref={trackRef} className="marquee-track">
+      <motion.div ref={trackRef} className="marquee-track" style={{ x }}>
         {/* Every copy after the first is decorative, so it stays out of the
             accessibility tree and a screen reader hears the client list once. */}
         {Array.from({ length: copies }, (_, copy) =>
@@ -142,7 +156,7 @@ export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
             </div>
           )),
         )}
-      </div>
+      </motion.div>
     </div>
   )
 }
