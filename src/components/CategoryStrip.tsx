@@ -1,4 +1,5 @@
-import type { MouseEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties, MouseEvent } from 'react'
 import { EVENTS, track } from '../lib/analytics'
 import { coverFor } from '../lib/categories'
 import type { Category, Product } from '../lib/sanity'
@@ -21,11 +22,44 @@ type Props = {
  * than shrinking its items past the point of being readable.
  */
 export function CategoryStrip({ categories, products, hideEmpty = false }: Props) {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [columnWidth, setColumnWidth] = useState<number>()
+
   const countOf = (id: string) => products.filter((product) => product.category === id).length
 
   const visible = categories
     .filter((category) => category.showInStrip)
     .filter((category) => !hideEmpty || countOf(category.id) > 0)
+
+  /**
+   * Size every column from the longest label.
+   *
+   * Left to itself the grid sizes each column to its own content, which made
+   * the card holding the longest label wider than the rest and enlarged its
+   * photograph with it. The labels come from the CMS, so the widest is measured
+   * rather than written down, and re-measured once the webfont has loaded,
+   * since Montserrat is wider than the fallback it swaps out.
+   */
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+
+    function measure() {
+      const element = trackRef.current
+      if (!element) return
+      const labels = element.querySelectorAll<HTMLElement>('.category-card .eyebrow')
+      if (labels.length === 0) return
+      // scrollWidth, not the box width: the label never wraps, so this stays the
+      // natural width even once the column has been narrowed around it.
+      setColumnWidth(Math.max(...[...labels].map((label) => Math.ceil(label.scrollWidth))))
+    }
+
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(track)
+    document.fonts?.ready.then(measure)
+    return () => observer.disconnect()
+  }, [visible.length])
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>, href: string, label: string) {
     track(EVENTS.categoryClick, { category: label })
@@ -36,7 +70,11 @@ export function CategoryStrip({ categories, products, hideEmpty = false }: Props
 
   return (
     <nav className="category-strip" aria-label="Product categories">
-      <div className="category-track">
+      <div
+        ref={trackRef}
+        className="category-track"
+        style={columnWidth ? ({ '--category-column': `${columnWidth}px` } as CSSProperties) : undefined}
+      >
         {visible.map((category) => {
           const href = `/#${category.anchor}`
           return (

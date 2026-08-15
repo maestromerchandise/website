@@ -313,10 +313,11 @@ a {
 .category-track {
   display: grid;
   grid-auto-flow: column;
-  /* `max-content` sizes each column to its own label, so a long one such as
-     Apparel & Wearables stays on a single line instead of wrapping to two and
-     breaking the row. */
-  grid-auto-columns: minmax(max-content, 1fr);
+  /* Every column takes the same width, measured from the longest label rather
+     than from each card's own. Sizing per column made Apparel & Wearables wider
+     than the other eight, which enlarged its photograph with it. The fallback
+     keeps a single line before the measurement lands. */
+  grid-auto-columns: minmax(var(--category-column, max-content), 1fr);
   gap: clamp(0.5rem, 1.2vw, 1rem);
   width: 100%;
   max-width: var(--page);
