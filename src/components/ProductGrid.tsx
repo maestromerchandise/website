@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from 'motion/react'
 import { Fragment } from 'react'
 import type { Product, SiteSettings } from '../lib/sanity'
 import { ProductDetail } from './ProductDetail'
@@ -24,6 +25,18 @@ type Props = {
  * pushes the rest of the catalogue down rather than covering it.
  */
 export function ProductGrid({ products, settings, selected, onSelect, onClose }: Props) {
+  const prefersReducedMotion = useReducedMotion()
+
+  /**
+   * The lift sits on the card rather than on the photograph, because a product
+   * awaiting photography renders a placeholder tile with no img inside it and
+   * would otherwise have no hover at all. Motion animates the return to rest as
+   * well as the lift, which a CSS hover on a transformed child did not.
+   */
+  const lift = prefersReducedMotion
+    ? {}
+    : { whileHover: { y: -10 }, whileTap: { y: -4 } }
+
   return (
     <div className="product-grid">
       {products.map((product) => {
@@ -36,15 +49,17 @@ export function ProductGrid({ products, settings, selected, onSelect, onClose }:
             {/* The reference prints the product name above its photograph, and
                 keeps the tile to a name and an image only. The tagline and the
                 copy belong to the detail panel. */}
-            <button
+            <motion.button
               type="button"
               className="product-card"
               aria-expanded={isOpen}
               onClick={() => (isOpen ? onClose() : onSelect(product))}
+              {...lift}
+              transition={{ type: 'spring', stiffness: 320, damping: 26 }}
             >
               <span className="name">{product.title}</span>
               <Thumb source={product.image} alt={product.title} width={240} />
-            </button>
+            </motion.button>
 
             {isOpen && <ProductDetail product={product} settings={settings} onClose={onClose} />}
           </Fragment>

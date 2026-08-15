@@ -443,15 +443,18 @@ a {
   background: none;
 }
 
-/* The photograph lifts on hover, as though it were floating off the page.
-   Transform and opacity only, so the tile never triggers layout mid-animation. */
+/* The card lifts on hover, handled by Motion so it eases back down on leave.
+   The lift deliberately lives on the card and not on the photograph: a product
+   with no photograph yet renders a placeholder tile with no img inside it, and
+   an img-only rule left those tiles with no hover at all.
+   The shadow stays in CSS, since only a real photograph has one to cast. */
 .product-card .thumb img {
   transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), filter 0.45s ease;
 }
 
 .product-card:hover .thumb img,
 .product-card:focus-visible .thumb img {
-  transform: translateY(-10px) scale(1.03);
+  transform: scale(1.03);
   filter: drop-shadow(0 14px 18px rgb(60 48 38 / 0.16));
 }
 
