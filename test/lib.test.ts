@@ -5,7 +5,7 @@ import { FALLBACK_CATEGORIES, hasOwnSection } from '../src/lib/categories.ts'
 import { enquiryMailto } from '../src/lib/enquiry.ts'
 import { galleryImages, shownImage } from '../src/lib/gallery.ts'
 import { imageSrcSet, imageUrl } from '../src/lib/img.ts'
-import { wrapScroll } from '../src/lib/marquee.ts'
+import { wrapOffset } from '../src/lib/marquee.ts'
 import { resolve } from '../src/lib/seo.ts'
 import { whatsappLink, whatsappProductLink } from '../src/lib/whatsapp.ts'
 
@@ -32,19 +32,19 @@ test('imageSrcSet is undefined for a missing asset, so no srcset attribute rende
   assert.equal(imageSrcSet(undefined, 400), undefined)
 })
 
-test('wrapScroll keeps an offset inside one lap', () => {
-  assert.equal(wrapScroll(30, 100), 30)
-  assert.equal(wrapScroll(100, 100), 0)
-  assert.equal(wrapScroll(130, 100), 30)
+test('wrapOffset keeps an offset inside one lap', () => {
+  assert.equal(wrapOffset(30, 100), 30)
+  assert.equal(wrapOffset(100, 100), 0)
+  assert.equal(wrapOffset(130, 100), 30)
 })
 
-test('wrapScroll wraps a backwards drag forward, not to a negative offset', () => {
-  assert.equal(wrapScroll(-10, 100), 90)
-  assert.equal(wrapScroll(-210, 100), 90)
+test('wrapOffset wraps a backwards drag forward, not to a negative offset', () => {
+  assert.equal(wrapOffset(-10, 100), 90)
+  assert.equal(wrapOffset(-210, 100), 90)
 })
 
-test('wrapScroll survives an unmeasured track', () => {
-  assert.equal(wrapScroll(50, 0), 0)
+test('wrapOffset survives an unmeasured track', () => {
+  assert.equal(wrapOffset(50, 0), 0)
 })
 
 // WhatsApp is the primary conversion channel, so a malformed number is a lost

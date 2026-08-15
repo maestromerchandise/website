@@ -374,17 +374,9 @@ a {
 
 /* Client logo marquee */
 .marquee {
-  display: flex;
-  gap: clamp(2.5rem, 7vw, 6rem);
-  align-items: center;
+  overflow: hidden;
   padding-inline: var(--gutter);
-  overflow-x: auto;
   cursor: grab;
-  scrollbar-width: none;
-  /* The page sets smooth scrolling for anchor navigation, which would otherwise
-     ease every frame the auto-advance writes. This scroller is driven from
-     script, so each write has to land where it was put. */
-  scroll-behavior: auto;
   /* Horizontal drag is ours; vertical must stay with the page or the section
      becomes a scroll trap on touch devices. */
   touch-action: pan-y;
@@ -392,8 +384,15 @@ a {
   user-select: none;
 }
 
-.marquee::-webkit-scrollbar {
-  display: none;
+/* Moved by transform, not by scrolling: a transform takes the sub-pixel values
+   a slow drift needs, and stays on the compositor instead of laying out the
+   row every frame. */
+.marquee-track {
+  display: flex;
+  gap: clamp(2.5rem, 7vw, 6rem);
+  align-items: center;
+  width: max-content;
+  will-change: transform;
 }
 
 .marquee:active {
