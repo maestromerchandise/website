@@ -689,10 +689,15 @@ a {
   border: 1px solid var(--border);
 }
 
+/* The field already draws a border, so the page-wide focus ring would sit
+   outside it as a second, detached rectangle. Darkening the border and butting
+   the outline straight against it reads as one thicker ring instead, and keeps
+   a real outline for forced-colours mode. */
 .field input:focus-visible,
 .field textarea:focus-visible {
   border-color: var(--text);
-  outline-offset: 1px;
+  outline: 1px solid var(--text);
+  outline-offset: 0;
 }
 
 .field textarea {
