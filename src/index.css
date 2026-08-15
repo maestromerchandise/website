@@ -455,10 +455,19 @@ a {
   filter: drop-shadow(0 14px 18px rgb(60 48 38 / 0.16));
 }
 
-/* The name sits above the photograph, as printed in the reference. */
+/* The name sits above the photograph, as printed in the reference.
+   Two lines are always reserved, so a one-line name and a two-line name start
+   their photographs at the same height and the row reads as one band rather
+   than a ragged edge. */
 .product-card .name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  min-height: calc(2 * 1.7em);
+  overflow: hidden;
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
+  line-height: 1.7;
   text-transform: uppercase;
   color: var(--text);
   transition: color 0.2s ease;
@@ -992,6 +1001,13 @@ a {
 
   .product-card {
     gap: 0.6rem;
+  }
+
+  /* A narrow column needs a third line: at 320px the longest product name runs
+     to three, and clamping at two would cut the last word off. */
+  .product-card .name {
+    -webkit-line-clamp: 3;
+    min-height: calc(3 * 1.7em);
   }
 }
 
