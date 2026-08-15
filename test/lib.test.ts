@@ -6,6 +6,7 @@ import { enquiryMailto } from '../src/lib/enquiry.ts'
 import { galleryImages, shownImage } from '../src/lib/gallery.ts'
 import { imageSrcSet, imageUrl } from '../src/lib/img.ts'
 import { wrapOffset } from '../src/lib/marquee.ts'
+import { monogram, placeholderHue } from '../src/lib/placeholder.ts'
 import { resolve } from '../src/lib/seo.ts'
 import { whatsappLink, whatsappProductLink } from '../src/lib/whatsapp.ts'
 
@@ -246,4 +247,30 @@ test('every navigation link points at a section or page that exists', () => {
     const id = item.href.replace(/^\/?#/, '')
     assert.ok(anchors.has(id), `${item.label} links to #${id}, which nothing renders`)
   }
+})
+
+// The stand-in artwork has to be stable and distinct: a hue that changed
+// between renders would reshuffle the grid's colours while it is being reviewed.
+test('placeholderHue is deterministic and inside the colour wheel', () => {
+  for (const name of ['Eco Tote Bag', '7-in-1 Folded Cutlery', '']) {
+    const hue = placeholderHue(name)
+    assert.equal(hue, placeholderHue(name))
+    assert.ok(hue >= 0 && hue < 360, `${name} produced ${hue}`)
+  }
+})
+
+test('placeholderHue separates the seeded products, so the grid is not one colour', () => {
+  const hues = new Set(seed.products.map((product: { title: string }) => placeholderHue(product.title)))
+  assert.ok(hues.size >= seed.products.length - 2, `only ${hues.size} hues for ${seed.products.length} products`)
+})
+
+test('monogram takes the first and last word, so a long name stays two letters', () => {
+  assert.equal(monogram('Eco Tote Bag'), 'EB')
+  assert.equal(monogram('Infuser'), 'IN')
+  assert.equal(monogram('7-in-1 Folded Cutlery'), '7C')
+})
+
+test('monogram never renders empty, which would leave a blank tile', () => {
+  assert.equal(monogram(''), '?')
+  assert.equal(monogram('   '), '?')
 })

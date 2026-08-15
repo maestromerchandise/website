@@ -1,4 +1,6 @@
+import type { CSSProperties } from 'react'
 import { imageSrcSet, imageUrl } from '../lib/img'
+import { monogram, placeholderHue } from '../lib/placeholder'
 
 type Props = {
   source?: string
@@ -9,19 +11,29 @@ type Props = {
 }
 
 /**
- * Product image with a neutral placeholder.
+ * Product image, with generated artwork standing in until one is uploaded.
  *
  * The catalogue is being built before the photography exists, so a missing
- * asset has to render as a deliberate empty tile rather than a broken image.
+ * asset renders as a deliberate tinted tile rather than a broken image. Setting
+ * the image in Studio replaces it with no cleanup, since nothing was ever
+ * stored for the placeholder.
  */
 export function Thumb({ source, alt, width, className }: Props) {
   const classes = className ? `thumb ${className}` : 'thumb'
 
   if (!source) {
     return (
-      <div className={classes} role="img" aria-label={`${alt} (image pending)`}>
+      <div
+        className={`${classes} thumb-placeholder`}
+        role="img"
+        aria-label={`${alt}, photograph pending`}
+        style={{ '--placeholder-hue': placeholderHue(alt) } as CSSProperties}
+      >
+        <span className="thumb-mark" aria-hidden="true">
+          {monogram(alt)}
+        </span>
         <span className="thumb-empty" aria-hidden="true">
-          Image pending
+          Photograph pending
         </span>
       </div>
     )

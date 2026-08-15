@@ -494,11 +494,31 @@ a {
   mix-blend-mode: multiply;
 }
 
+/* Generated stand-in artwork. The hue comes from the product name, so a grid of
+   pending items reads as a catalogue instead of one grey box repeated. Kept very
+   pale and barely saturated, so it never competes with real photography beside
+   it while the catalogue is filled in. */
+/* Two classes deliberately: a real photograph floats on the page with no tile
+   behind it (`.product-card .thumb` clears the background), and this has to
+   outrank that without reintroducing a box around the finished photography. */
+.thumb.thumb-placeholder {
+  gap: 0.5rem;
+  align-content: center;
+  background: hsl(var(--placeholder-hue) 24% 93%);
+}
+
+.thumb-mark {
+  font-size: clamp(1.1rem, 3vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: hsl(var(--placeholder-hue) 20% 42%);
+}
+
 .thumb-empty {
   font-size: 0.5625rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: hsl(var(--placeholder-hue, 30) 12% 55%);
 }
 
 /* Product detail
