@@ -220,12 +220,20 @@ a {
 
 /* The reference shows a bare magnifier at the right edge, not a bordered field.
    The input opens from it on focus, so the resting state matches the mockup and
-   the search is still reachable without a second page. */
+   the search is still reachable without a second page.
+
+   At rest that magnifier is the whole control, and 15px of icon is not a target,
+   so the label carries the 44px around it. The inline padding is pulled back by
+   a negative margin, which keeps the icon on the gutter rather than inset from
+   it — a fixed width here instead made the box wider than its icon and left the
+   magnifier stranded well clear of the edge on a phone. */
 .search {
   display: flex;
   gap: 0.35rem;
   align-items: center;
-  padding: 0.3rem 0;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.75rem;
+  margin-right: -0.75rem;
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s ease;
 }
@@ -271,8 +279,25 @@ a {
   color: var(--text);
 }
 
+/* The drawer hangs below the header rather than sitting in the flow of the
+   page. In the flow it pushed everything under it down by its own height when
+   it opened, so the section a visitor was reading jumped away from them at the
+   moment they reached for the menu. Absolute keeps the page still, and the
+   header's own stacking context puts the drawer over the content. */
 .menu-drawer {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg);
   border-top: 1px solid var(--border);
+}
+
+/* The header makes its own stacking context, so the drawer cannot rise above
+   the floating buttons on its own: the whole header has to outrank them while
+   the menu is open. */
+.header:has(.menu-drawer[data-open='true']) {
+  z-index: 60;
 }
 
 .menu-drawer-nav {
@@ -1025,8 +1050,15 @@ a {
     display: grid;
   }
 
-  .search {
-    width: min(8rem, 34vw);
+  /* The magnifier sits at the right edge, as it does on a wide screen. Giving
+     the label a fixed width made the box wider than the icon inside it, which
+     pushed the icon well clear of the edge and read as a misalignment. The
+     field opens from the icon on focus instead, and the row can spare the
+     width because the drawer has taken the navigation. */
+  .search-field:focus,
+  .search-field:not(:placeholder-shown),
+  .search:hover .search-field {
+    width: min(9rem, 40vw);
   }
 
   /* Nine columns in a phone's width would leave each one too narrow to read, so
