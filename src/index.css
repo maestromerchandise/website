@@ -674,7 +674,10 @@ a {
   margin-block: clamp(1rem, 2vw, 1.75rem);
   padding: clamp(1.5rem, 4vw, 3rem);
   text-align: left;
-  background: var(--bg-muted);
+  /* The page is white throughout, so the panel is white too, and carries no
+     border: the reference sets the copy on the open page with nothing drawn
+     around it. */
+  background: var(--bg);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -709,7 +712,6 @@ a {
 
 .detail-gallery .thumb {
   aspect-ratio: 1;
-  background: var(--bg);
 }
 
 .detail-strip {
@@ -720,7 +722,6 @@ a {
 
 .detail-strip .thumb {
   aspect-ratio: 1;
-  background: var(--bg);
 }
 
 .gallery-pick {
