@@ -590,39 +590,31 @@ a {
 }
 
 /* The photograph sits beside the copy, as in the reference: image left, text
-   right. Narrower than the full-width panel's split, since a panel is half a
-   row here, but still two columns rather than a stack. */
+   right, two columns rather than a stack. */
 .detail-pair .product-detail {
   grid-column: auto;
-  /* The copy takes the larger share: it carries the tagline, two lists and the
-     action, while the photograph only has to stay square. An even split left
-     the text in a narrow ribbon that ran far below the picture beside it. */
-  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+  /* The photograph takes the larger share. It is the thing being sold, and a
+     square block needs width to read as one; the copy beside it is small type
+     and can be the narrower column even if that leaves it shorter. */
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   gap: clamp(1rem, 2vw, 1.75rem);
   margin-block: 0;
   padding: clamp(1.25rem, 2.5vw, 2rem);
 }
 
-/* The photograph rises to the height of the copy beside it rather than holding
-   a square and letting the text run 200px past its bottom edge. Dropping the
-   fixed ratio lets the picture fill the column; `contain` keeps the product
-   itself undistorted inside whatever shape that leaves. */
-.detail-pair .detail-gallery .thumb {
-  aspect-ratio: auto;
-  height: 100%;
-  min-height: 14rem;
-}
-
+/* The photograph stays square and sits at the top of the panel. Letting it
+   stretch to the height of the copy turned the product shot into a tall strip,
+   which is not what the reference shows: there the picture is a large square
+   block with the text set beside it, free to be shorter. */
 .detail-pair .detail-gallery {
-  display: flex;
-  flex-direction: column;
+  align-self: start;
 }
 
 /* A lone panel has the whole row rather than half of it, so it gives the
    photograph a larger share and holds the copy to a readable measure instead of
    running one line the full width of the page. */
 .detail-pair:has(> .product-detail:only-child) .product-detail {
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   max-width: 68rem;
   margin-inline: auto;
 }
@@ -637,6 +629,9 @@ a {
 .detail-pair .product-detail h3 {
   font-size: clamp(1.05rem, 1.3vw, 1.35rem);
   line-height: 1.25;
+  /* Clear of the close button in the panel's top right corner, which the
+     tighter padding brought within reach of a long title. */
+  padding-right: 2.25rem;
 }
 
 .detail-pair .detail-tagline {
@@ -1197,7 +1192,7 @@ a {
   }
 
   .detail-pair .product-detail {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     padding-top: 3.25rem;
   }
 
