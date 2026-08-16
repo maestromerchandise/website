@@ -27,10 +27,9 @@ type Props = {
  * so the name and the image are a single 44px-plus target and a screen reader
  * announces one control instead of two that do the same thing.
  *
- * How many panels open is decided by how many products the grid holds. An even
- * count divides in two, so a row is read as two halves and each half carries its
- * own panel, the pair sitting side by side so two products can be compared at
- * once. An odd count has a true middle product and opens a single panel on it.
+ * A row is read as two halves and each half carries its own panel, the pair
+ * sitting side by side so two products can be compared at once. A row holding a
+ * single tile has no halves to divide and opens one panel instead.
  *
  * Panels are placed after the last tile of their row rather than after the tile
  * that opened them. A panel is a wide grid item and cannot share a row with a
@@ -66,16 +65,19 @@ export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
   const rowOf = (index: number) => Math.floor(index / columns)
   const lastOfRow = (row: number) => Math.min(row * columns + columns - 1, products.length - 1)
 
-  /**
-   * How many panels this grid shows, decided by how many products it holds.
-   *
-   * An even catalogue divides cleanly into two, so it opens a pair. An odd one
-   * has a true middle product and opens a single panel on it instead, rather
-   * than splitting into halves where one is always a product longer.
-   */
-  const isPaired = products.length % 2 === 0
-
   const rowStart = (row: number) => row * columns
+  const countInRow = (row: number) => lastOfRow(row) - rowStart(row) + 1
+
+  /**
+   * How many panels a row opens: two when it holds more than one tile, one when
+   * it holds a single tile and so has no halves to divide.
+   *
+   * Judged per row rather than from the size of the whole catalogue. Counting
+   * the catalogue gave Ready-Made, with fifteen products across three full rows,
+   * a single panel purely because fifteen is odd, which reads as a mistake next
+   * to every other section.
+   */
+  const isPairedRow = (row: number) => countInRow(row) > 1
 
   /**
    * Where a row splits into its two halves, measured from the tiles the row
@@ -86,9 +88,9 @@ export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
    * The left half takes the extra tile when the row's count is odd, so three
    * tiles read as two and one rather than leaving the middle one without a side.
    */
-  const halfOf = (row: number) => Math.ceil((lastOfRow(row) - rowStart(row) + 1) / 2)
+  const halfOf = (row: number) => Math.ceil(countInRow(row) / 2)
   const sideOf = (index: number): Side =>
-    !isPaired || index - rowStart(rowOf(index)) < halfOf(rowOf(index)) ? 'left' : 'right'
+    index - rowStart(rowOf(index)) < halfOf(rowOf(index)) ? 'left' : 'right'
 
   /**
    * The open panels stay on one row: the row of the tile clicked last, with any
@@ -98,25 +100,18 @@ export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
   const clicked = selected.product ? products.indexOf(selected.product) : -1
   const clickedSide = clicked < 0 ? undefined : sideOf(clicked)
 
-  /**
-   * Which product each open side shows. Until the visitor picks a tile, a paired
-   * grid opens the first product of each half of the row, and an unpaired one
-   * opens the middle product of the whole catalogue — the centre is what an odd
-   * count has that an even one does not.
-   */
-  const middle = Math.floor(products.length / 2)
-  /** The row the panels sit under: the clicked tile's, or the opening default. */
-  const openRowIndex = clicked >= 0 ? rowOf(clicked) : isPaired ? 0 : rowOf(middle)
+  /** The row the panels sit under: the clicked tile's, or the first row. */
+  const openRowIndex = clicked >= 0 ? rowOf(clicked) : 0
+  const sides = isPairedRow(openRowIndex) ? (['left', 'right'] as const) : (['left'] as const)
 
+  /**
+   * Which product each open side shows: the tile clicked, and for the other side
+   * the first product of its half of the same row.
+   */
   const openRow: Partial<Record<Side, Product>> = {}
-  for (const side of isPaired ? (['left', 'right'] as const) : (['left'] as const)) {
+  for (const side of sides) {
     if (selected.closed?.includes(side)) continue
-    const fallback = isPaired
-      ? rowStart(openRowIndex) + (side === 'left' ? 0 : halfOf(openRowIndex))
-      : clicked >= 0
-        ? clicked
-        : middle
-    // A row with a single tile has no right half, and `fallback` runs past its end.
+    const fallback = rowStart(openRowIndex) + (side === 'left' ? 0 : halfOf(openRowIndex))
     const product = side === clickedSide ? products[clicked] : products[fallback]
     if (product && rowOf(products.indexOf(product)) === openRowIndex) openRow[side] = product
   }
