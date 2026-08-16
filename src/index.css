@@ -312,20 +312,31 @@ a {
 
 .category-track {
   display: grid;
-  grid-auto-flow: column;
-  /* Every column takes the same width, measured from the longest label rather
-     than from each card's own. Sizing per column made Apparel & Wearables wider
-     than the other eight, which enlarged its photograph with it. The fallback
-     keeps a single line before the measurement lands. */
-  grid-auto-columns: minmax(var(--category-column, max-content), 1fr);
+  /* Every category shares the row and every column is the same width, so no one
+     card's photograph is larger than its neighbours'.
+     `1fr` columns rather than a measured minimum: sizing them from the longest
+     label forced nine 152px columns into a 1280px row, and the last two were
+     cut off at the edge with no scrollbar to say so. Dividing the row instead
+     keeps all nine visible, and a label too long for its column wraps. */
+  grid-template-columns: repeat(var(--category-count, 9), minmax(0, 1fr));
   gap: clamp(0.5rem, 1.2vw, 1rem);
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
   padding-inline: var(--gutter);
+  /* Room for the hover lift. `overflow-x: auto` forces the block axis to clip
+     too, so a card raised by 10px had its label cut off against the top of the
+     scroll box. The padding gives the lift somewhere to go; the negative margin
+     keeps the row sitting where it did before the padding was added. */
+  padding-block: 0.75rem;
+  margin-block: -0.75rem;
   overflow-x: auto;
   scrollbar-width: none;
   scroll-snap-type: x proximity;
+  /* Snap to the gutter, not to the edge of the scroll box. Without this the
+     first card snaps flush against the box and scrolls the gutter off screen,
+     which reads as the leading card being cut in half. */
+  scroll-padding-inline: var(--gutter);
   overscroll-behavior-x: contain;
 }
 
@@ -346,12 +357,16 @@ a {
   scroll-snap-align: start;
 }
 
-/* Slightly tighter than the shared eyebrow, so all nine labels fit the row at
-   the page width instead of the last one being cut off. */
+/* Slightly tighter than the shared eyebrow, so the labels sit comfortably in a
+   column that is now a share of the row rather than as wide as the longest name.
+   A two-word label wraps instead of being clipped, and two lines are always
+   reserved so every photograph in the row starts at the same height. */
 .category-card .eyebrow {
-  white-space: nowrap;
   font-size: 0.625rem;
   letter-spacing: 0.14em;
+  line-height: 1.5;
+  min-height: calc(2 * 1.5em);
+  text-wrap: balance;
 }
 
 .category-card .thumb {
@@ -1014,7 +1029,12 @@ a {
     width: min(8rem, 34vw);
   }
 
+  /* Nine columns in a phone's width would leave each one too narrow to read, so
+     below the breakpoint the cards take a fixed width and the row scrolls
+     sideways instead of dividing itself further. */
   .category-track {
+    grid-template-columns: none;
+    grid-auto-flow: column;
     grid-auto-columns: 7.5rem;
   }
 
