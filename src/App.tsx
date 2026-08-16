@@ -6,6 +6,7 @@ import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { LogoMarquee } from './components/LogoMarquee'
 import { ProductGrid } from './components/ProductGrid'
+import type { Side } from './components/ProductGrid'
 import { Section } from './components/Section'
 import { WhatsAppButton } from './components/WhatsAppButton'
 import { EVENTS, initAnalytics, track } from './lib/analytics'
@@ -23,7 +24,18 @@ function matches(product: Product, query: string): boolean {
 
 export default function App() {
   const { content, error, isLoading } = useSiteContent()
-  const [selected, setSelected] = useState<Product>()
+  /**
+   * What each grid has open: the tile clicked last, which decides the row both
+   * panels sit on, and the sides the visitor has closed.
+   *
+   * A row is split in two and each half carries its own panel, so a section
+   * shows two products at once. Held per grid rather than once for the page, so
+   * every section opens its own pair on arrival and a product listed in both its
+   * category and Ready-Made opens only where it was clicked.
+   */
+  const [openByGrid, setOpenByGrid] = useState<
+    Record<string, { product?: Product; closed?: Side[] }>
+  >({})
   const [query, setQuery] = useState('')
 
   const settings = content?.settings
@@ -42,6 +54,7 @@ export default function App() {
   const products = all.filter((product) => !query || matches(product, query))
   const readyMade = products.filter((product) => product.readyMade)
   const boxes = products.filter((product) => product.category === 'box')
+
   const generalWhatsapp = whatsappLink(settings)
   const isSearching = query.trim().length > 0
 
@@ -72,8 +85,34 @@ export default function App() {
     </div>
   )
 
-  function openProduct(product: Product, location: 'category' | 'ready_made' | 'custom_box') {
-    setSelected(product)
+  /** Recorded rather than simply dropped, so that half's first product does not
+      spring straight back as the default. */
+  function closeProduct(gridId: string, side: Side) {
+    setOpenByGrid((current) => {
+      const grid = current[gridId] ?? {}
+      const closed = grid.closed ?? []
+      return {
+        ...current,
+        [gridId]: { ...grid, closed: closed.includes(side) ? closed : [...closed, side] },
+      }
+    })
+  }
+
+  function openProduct(
+    product: Product,
+    location: 'category' | 'ready_made' | 'custom_box',
+    gridId: string,
+    side: Side,
+  ) {
+    // Opening reopens that side: a visitor who closed a panel and then picked a
+    // tile on it means to see the tile, not to have the click swallowed.
+    setOpenByGrid((current) => ({
+      ...current,
+      [gridId]: {
+        product,
+        closed: (current[gridId]?.closed ?? []).filter((shut) => shut !== side),
+      },
+    }))
     track(location === 'ready_made' ? EVENTS.readyMadeOpen : EVENTS.productOpen, {
       product: product.title,
       location,
@@ -116,10 +155,9 @@ export default function App() {
               <Section key={category.id} id={category.id} heading={category.label}>
                 <ProductGrid
                   products={inCategory}
-                  settings={settings}
-                  selected={selected}
-                  onSelect={(product) => openProduct(product, 'category')}
-                  onClose={() => setSelected(undefined)}
+                  selected={openByGrid[category.id] ?? {}}
+                  onSelect={(product, side) => openProduct(product, 'category', category.id, side)}
+                  onClose={(side) => closeProduct(category.id, side)}
                 />
               </Section>
             )
@@ -130,10 +168,9 @@ export default function App() {
           <Section id="ready-made" heading={homepage?.readyMadeSection?.heading ?? 'Ready-Made'}>
             <ProductGrid
               products={readyMade}
-              settings={settings}
-              selected={selected}
-              onSelect={(product) => openProduct(product, 'ready_made')}
-              onClose={() => setSelected(undefined)}
+              selected={openByGrid['ready-made'] ?? {}}
+              onSelect={(product, side) => openProduct(product, 'ready_made', 'ready-made', side)}
+              onClose={(side) => closeProduct('ready-made', side)}
             />
           </Section>
         )}
@@ -155,10 +192,9 @@ export default function App() {
         >
           <ProductGrid
             products={boxes}
-            settings={settings}
-            selected={selected}
-            onSelect={(product) => openProduct(product, 'custom_box')}
-            onClose={() => setSelected(undefined)}
+            selected={openByGrid['custom-box'] ?? {}}
+            onSelect={(product, side) => openProduct(product, 'custom_box', 'custom-box', side)}
+            onClose={(side) => closeProduct('custom-box', side)}
           />
           {customCta(EVENTS.customBoxCta)}
         </Section>

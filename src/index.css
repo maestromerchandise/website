@@ -15,7 +15,11 @@
   --bg-muted: #f7f5f3;
   --border: #e8e4df;
 
-  --page: 1280px;
+  /* Wide enough that a row's two detail panels each get a readable column: at
+     1280px the copy beside a photograph ran to a narrow ribbon and the panels
+     grew tall and uneven. The gutter stays generous, so the page still holds a
+     margin rather than running to the edge of a large screen. */
+  --page: 1600px;
   --gutter: clamp(1.25rem, 4vw, 4rem);
   --track: 0.22em;
 
@@ -568,8 +572,99 @@ a {
 
 /* Product detail
    Opened inside the grid rather than over the page, so the catalogue stays one
-   continuous document. The panel is its own grid item spanning every column,
-   which places it on the row below the tile that opened it. */
+   continuous document. The panels are wrapped in a grid item spanning every
+   column, which places them on the row below the tiles they belong to. */
+.detail-pair {
+  grid-column: 1 / -1;
+  display: grid;
+  /* Two columns when the catalogue divides in two, one when it has an odd
+     middle product. `auto-fit` collapses the empty track rather than leaving a
+     lone panel sitting in half the width with a gap beside it. */
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  /* Stretch, not start: the two panels share a row and a ragged pair of heights
+     reads as a mistake. Each panel then fills the height its taller neighbour
+     sets, and its own contents stay top-aligned inside that. */
+  align-items: stretch;
+  gap: clamp(1rem, 2vw, 1.75rem);
+  margin-block: clamp(1rem, 2vw, 1.75rem);
+}
+
+/* The photograph sits beside the copy, as in the reference: image left, text
+   right. Narrower than the full-width panel's split, since a panel is half a
+   row here, but still two columns rather than a stack. */
+.detail-pair .product-detail {
+  grid-column: auto;
+  /* The copy takes the larger share: it carries the tagline, two lists and the
+     action, while the photograph only has to stay square. An even split left
+     the text in a narrow ribbon that ran far below the picture beside it. */
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.75rem);
+  margin-block: 0;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+/* The photograph rises to the height of the copy beside it rather than holding
+   a square and letting the text run 200px past its bottom edge. Dropping the
+   fixed ratio lets the picture fill the column; `contain` keeps the product
+   itself undistorted inside whatever shape that leaves. */
+.detail-pair .detail-gallery .thumb {
+  aspect-ratio: auto;
+  height: 100%;
+  min-height: 14rem;
+}
+
+.detail-pair .detail-gallery {
+  display: flex;
+  flex-direction: column;
+}
+
+/* A lone panel has the whole row rather than half of it, so it gives the
+   photograph a larger share and holds the copy to a readable measure instead of
+   running one line the full width of the page. */
+.detail-pair:has(> .product-detail:only-child) .product-detail {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+  max-width: 68rem;
+  margin-inline: auto;
+}
+
+/* The copy is set for a full width panel, which is roughly twice this column.
+   Left at that size the heading and tagline tower over a photograph only about
+   230px wide, so the type steps down to match the picture it sits beside. */
+/* The copy is set loosely for a full width panel. Beside a photograph roughly
+   230px tall it has to be tighter, or the text column runs well past the bottom
+   of the picture and the two stop reading as one block. The leading carries most
+   of that: 1.8 on a five item list alone adds over 40px. */
+.detail-pair .product-detail h3 {
+  font-size: clamp(1.05rem, 1.3vw, 1.35rem);
+  line-height: 1.25;
+}
+
+.detail-pair .detail-tagline {
+  margin-top: 0.35rem;
+  font-size: 0.84375rem;
+  line-height: 1.45;
+}
+
+.detail-pair .detail-description {
+  margin-top: 0.6rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.detail-pair .spec-list {
+  margin-top: 0.4rem;
+  font-size: 0.78125rem;
+  line-height: 1.5;
+}
+
+.detail-pair .detail-body h4 {
+  margin-top: 0.9rem;
+}
+
+.detail-pair .swatches {
+  margin-top: 0.5rem;
+}
+
 .product-detail {
   grid-column: 1 / -1;
   position: relative;
@@ -661,13 +756,6 @@ a {
   color: var(--text-faint);
   text-transform: none;
   letter-spacing: 0.04em;
-}
-
-.detail-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 2rem;
 }
 
 .spec-list {
@@ -1083,16 +1171,23 @@ a {
     padding-top: 3.25rem;
   }
 
+  /* Two panels side by side would leave each about 160px wide on a phone, so
+     below the breakpoint they stack and read at full width instead. Stacked,
+     each panel has the whole row again, so the photograph keeps its place
+     beside the copy rather than sitting on top of it. */
+  .detail-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .detail-pair .product-detail {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    padding-top: 3.25rem;
+  }
+
   /* The panel spans whatever the grid currently has, so it still fills the row
      when the column count changes under it. */
   .detail-strip {
     grid-template-columns: repeat(auto-fill, minmax(3.25rem, 1fr));
-  }
-
-  /* A full width action is easier to hit than two side by side on a phone. */
-  .detail-actions .button {
-    width: 100%;
-    text-align: center;
   }
 }
 
@@ -1113,6 +1208,15 @@ a {
   .product-card .name {
     -webkit-line-clamp: 3;
     min-height: calc(3 * 1.7em);
+  }
+
+  /* Only here does the photograph give up its column: at this width a two
+     column split leaves the copy too narrow to read. The `:has` selector is
+     repeated so this outranks the lone-panel rule above, which is otherwise the
+     more specific of the two and would keep its columns at every width. */
+  .detail-pair .product-detail,
+  .detail-pair:has(> .product-detail:only-child) .product-detail {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

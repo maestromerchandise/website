@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { EVENTS, track } from '../lib/analytics'
 import { galleryImages, shownImage } from '../lib/gallery'
-import type { Product, SiteSettings } from '../lib/sanity'
-import { whatsappProductLink } from '../lib/whatsapp'
+import type { Product } from '../lib/sanity'
 import { Thumb } from './Thumb'
 
 type Props = {
   product: Product
-  settings: SiteSettings | null | undefined
   onClose: () => void
 }
 
@@ -21,7 +18,7 @@ type Props = {
  * colour, which is what makes the swatches a way of seeing the product rather
  * than a legend printed beside it.
  */
-export function ProductDetail({ product, settings, onClose }: Props) {
+export function ProductDetail({ product, onClose }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
   const [activeColor, setActiveColor] = useState<string>()
   const [pickedImage, setPickedImage] = useState<string>()
@@ -29,8 +26,6 @@ export function ProductDetail({ product, settings, onClose }: Props) {
   const colors = product.colors ?? []
   const gallery = galleryImages(product)
   const shown = shownImage(product, activeColor, pickedImage)
-
-  const whatsapp = whatsappProductLink(settings, product.title)
 
   // The panel opens where the product is, and the page stays put. Scrolling to
   // it would move the catalogue out from under the tile that was just clicked,
@@ -147,21 +142,6 @@ export function ProductDetail({ product, settings, onClose }: Props) {
           </>
         )}
 
-        {whatsapp && (
-          <div className="detail-actions">
-            <a
-              className="button"
-              href={whatsapp}
-              target="_blank"
-              rel="noreferrer"
-              onClick={() =>
-                track(EVENTS.whatsappClick, { location: 'product_detail', product: product.title })
-              }
-            >
-              Ask about this on WhatsApp
-            </a>
-          </div>
-        )}
       </div>
     </div>
   )
