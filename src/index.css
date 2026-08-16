@@ -768,13 +768,16 @@ a {
 .swatches {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  /* Wide enough that the 44px targets around each dot do not overlap and steal
+     one another's taps. */
+  gap: 1.25rem;
   margin-top: 0.75rem;
   padding: 0;
   list-style: none;
 }
 
 .swatch {
+  position: relative;
   display: block;
   width: 1.6rem;
   height: 1.6rem;
@@ -782,6 +785,19 @@ a {
   border: 1px solid var(--border);
   border-radius: 50%;
   transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+/* The dot stays 1.6rem, because the colour is what it is showing; the target
+   around it reaches 44px so it can be hit with a thumb. Growing the button
+   itself would space the row out as though the colours were larger. */
+.swatch::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
 }
 
 .swatch:hover {
