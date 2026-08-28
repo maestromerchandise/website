@@ -28,6 +28,19 @@ root `npm install` sets it up too.
 ```bash
 cp studio/.env.example studio/.env   # then fill in the values by hand
 npx sanity login
+```
+
+Register every browser origin that will read the project. Sanity holds this as an allowlist on its own servers, so it cannot be set in `.env`, and until an origin is on the list both the Studio and the catalogue fail with a CORS error:
+
+```bash
+npm run cors -- http://localhost:5173 --credentials   # the dev server
+npm run cors -- https://www.yourdomain.com --credentials
+npm run cors:list                                     # what is already allowed
+```
+
+The Studio is served by the site itself at [/studio](http://localhost:5173/studio), so `npm run dev` is all that is needed to edit content. It is also still available on its own:
+
+```bash
 npm run studio                       # http://localhost:3333
 ```
 
