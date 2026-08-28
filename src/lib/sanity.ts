@@ -96,7 +96,6 @@ export type Homepage = {
   customBoxSection?: SectionCopy
   contactSection?: SectionCopy
   contactLead?: { title?: string; subtitle?: string }
-  featuredProducts?: string[]
   clientLogos?: ClientLogo[]
   faq?: FaqEntry[]
   seo?: Seo
@@ -169,7 +168,6 @@ const QUERY = `{
     customBoxSection,
     contactSection,
     contactLead,
-    "featuredProducts": featuredProducts[]->coalesce(slug.current, _id),
     clientLogos[]{name, "image": image.asset->url},
     faq[]{question, answer},
     "seo": seo{${SEO_FIELDS}}
