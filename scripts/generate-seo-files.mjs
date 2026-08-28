@@ -32,8 +32,11 @@ ${pages
 </urlset>
 `
 
+// /studio/ is the editing tool, not part of the site. It already carries a
+// noindex meta tag; this keeps a crawler from spending requests on it at all.
 const robots = `User-agent: *
 Allow: /
+Disallow: /studio/
 
 Sitemap: ${siteUrl}/sitemap.xml
 `

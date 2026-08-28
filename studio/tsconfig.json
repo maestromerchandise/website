@@ -12,5 +12,5 @@
     "esModuleInterop": true,
     "types": ["node"]
   },
-  "include": ["schemas", "sanity.config.ts"]
+  "include": ["schemas", "sanity.config.ts", "studio-config.ts"]
 }
