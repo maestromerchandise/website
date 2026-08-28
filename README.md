@@ -53,8 +53,25 @@ npm run studio:deploy
 Load the copy transcribed from `Web Maestro.pdf` into an empty dataset. It uses `createIfNotExists`, so running it twice never overwrites an edit made in Studio:
 
 ```bash
-npm run seed
+npm run seed        # needs SANITY_WRITE_TOKEN
+npm run seed:cli    # same content through the logged-in CLI, no token needed
 ```
+
+Empty the dataset again, which is how a test project is cleared before it is handed over. It deletes the dataset and recreates it, so every document and every uploaded image goes with it:
+
+```bash
+npm run dataset:reset
+```
+
+### Handing the project to its owner
+
+The site and the Studio both read the `VITE_` pair, so the owner fills in one file at the root and nothing else. `studio/.env` is only needed by `npm run studio` and `npm run studio:deploy`, which the embedded Studio at `/studio` replaces.
+
+1. Create a project at [sanity.io/manage](https://www.sanity.io/manage) and copy its project id
+2. `cp .env.example .env`, then fill in the project id and dataset
+3. `npx sanity login` as the account that owns the project
+4. `npm run cors -- http://localhost:5173 --credentials`, and again for the live domain
+5. `npm run seed:cli` to put the starting content in place
 
 ## Usage
 
