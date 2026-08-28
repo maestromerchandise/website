@@ -16,7 +16,8 @@
     "seed:cli": "node scripts/seed-content.mjs --out .seed.ndjson && sanity dataset import .seed.ndjson production --missing",
     "studio": "npm run dev --workspace studio",
     "studio:deploy": "npm run deploy --workspace studio",
-    "dataset:reset": "sanity dataset delete production --force && sanity dataset create production --visibility public",
+    "dataset:clear": "sanity dataset delete production --force && sanity dataset create production --visibility public",
+    "dataset:reset": "npm run dataset:clear && npm run seed:cli",
     "cors": "sanity cors add",
     "cors:list": "sanity cors list"
   },

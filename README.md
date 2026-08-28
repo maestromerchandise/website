@@ -57,10 +57,11 @@ npm run seed        # needs SANITY_WRITE_TOKEN
 npm run seed:cli    # same content through the logged-in CLI, no token needed
 ```
 
-Empty the dataset again, which is how a test project is cleared before it is handed over. It deletes the dataset and recreates it, so every document and every uploaded image goes with it:
+Put the dataset back to the state it started in, which is how a test project is cleared before it changes hands. Both delete the dataset and recreate it, so every document and every uploaded image goes with it:
 
 ```bash
-npm run dataset:reset
+npm run dataset:reset   # back to the seeded content, images gone
+npm run dataset:clear   # left completely empty
 ```
 
 ### Handing the project to its owner
