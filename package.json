@@ -13,8 +13,11 @@
     "test": "node --test \"test/*.test.ts\"",
     "preview": "vite preview",
     "seed": "node --env-file=.env scripts/seed-content.mjs",
+    "seed:cli": "node scripts/seed-content.mjs --out .seed.ndjson && sanity dataset import .seed.ndjson production --missing",
     "studio": "npm run dev --workspace studio",
-    "studio:deploy": "npm run deploy --workspace studio"
+    "studio:deploy": "npm run deploy --workspace studio",
+    "cors": "sanity cors add",
+    "cors:list": "sanity cors list"
   },
   "dependencies": {
     "motion": "^13.1.0",
