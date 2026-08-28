@@ -5,42 +5,52 @@ import babel from '@rolldown/plugin-babel'
 import { resolve } from 'node:path'
 
 /**
- * Redirect /about and /studio to their trailing slash form while developing.
+ * Make the dev server resolve the two page directories the way Apache does.
  *
- * Each is a directory holding an index.html, and the dev server only matches one
- * when the path ends in a slash; without it the request falls through to the
- * home page, so /studio quietly served the site instead of the Studio. Apache
- * adds the slash itself in production, which is why the built site is unaffected
- * and the fix belongs to the dev server alone.
+ * Two things are missing from it. A request for /studio has no trailing slash,
+ * so index.html in that folder is never matched and the request falls through
+ * to the home page. And /studio/structure/... is a route inside the Studio
+ * rather than a file, so a refresh there falls through in the same way, which
+ * is what sent an open document back to the site's front page.
+ *
+ * Apache does both in production through mod_dir and the rewrite in .htaccess,
+ * so this only ever runs while developing.
+ *
+ * The Studio fallback keys off the Accept header rather than the shape of the
+ * path: a browser navigating asks for text/html, while the module requests Vite
+ * makes for studio-config.ts and the schema files do not, and those must still
+ * reach the files they name.
  */
-function trailingSlash(directories: string[]): Plugin {
+function pageDirectories(): Plugin {
+  const directories = ['/about', '/studio']
+
   return {
-    name: 'trailing-slash',
+    name: 'page-directories',
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
         const [path] = (request.url ?? '').split('?')
-        if (!directories.includes(path)) return next()
-        response.writeHead(301, { Location: `${request.url?.replace(path, `${path}/`)}` })
-        response.end()
+
+        if (directories.includes(path)) {
+          response.writeHead(301, { Location: `${path}/` })
+          response.end()
+          return
+        }
+
+        if (path.startsWith('/studio/') && request.headers.accept?.includes('text/html')) {
+          request.url = '/studio/index.html'
+        }
+
+        next()
       })
     },
   }
 }
 
-// Multi-page build: the home page is one long anchor-scrolled document, while
-// About is a real static file at about/index.html. Serving it as a file rather
-// than a client-side route means Apache on Hostinger resolves /about/ directly,
-// so a refresh cannot 404 and no rewrite rules are needed.
-//
-// The Studio is a third entry for the same reason, and because keeping it out of
-// the home page's graph is what stops visitors downloading an editing tool they
-// will never open. It lives in studio/ beside the Sanity workspace, since the
-// output path mirrors the source path and /studio/ is the URL it has to serve.
 export default defineConfig({
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
-    trailingSlash(['/about', '/studio']),
+    pageDirectories(),
   ],
   build: {
     rollupOptions: {
