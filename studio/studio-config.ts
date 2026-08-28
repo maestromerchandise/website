@@ -22,13 +22,27 @@ const SINGLETONS = [
  * at /studio is a browser bundle and can only see Vite's `VITE_*` values. Taking
  * the ids as arguments keeps one definition of the schema and the structure
  * rather than two that drift apart.
+ *
+ * `basePath` is what tells the Studio router which part of the URL is not its
+ * own. Mounted at /studio without it, the router reads the first segment as the
+ * name of a tool and fails with "Tool not found: studio". The deployed Studio
+ * sits at the root of its own host and passes nothing.
  */
-export function createStudioConfig({ projectId, dataset }: { projectId: string; dataset: string }) {
+export function createStudioConfig({
+  projectId,
+  dataset,
+  basePath,
+}: {
+  projectId: string
+  dataset: string
+  basePath?: string
+}) {
   return defineConfig({
     name: 'maestro',
     title: 'Maestro',
     projectId,
     dataset,
+    ...(basePath ? { basePath } : {}),
     schema: {
       types: [product, productCategory, homepage, aboutPage, siteSettings, seo],
       // A singleton is one fixed document, so it is never offered in the

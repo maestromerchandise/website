@@ -19,6 +19,9 @@ createRoot(document.getElementById('root')!).render(
     config={createStudioConfig({
       projectId: config.sanityProjectId,
       dataset: config.sanityDataset,
+      // Matches the folder this entry builds into, and so the URL it is served
+      // from. Without it the Studio router reads "studio" as a tool name.
+      basePath: '/studio',
     })}
   />,
 )
