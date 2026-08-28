@@ -52,6 +52,13 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     pageDirectories(),
   ],
+  server: {
+    // Pinned, and strict so Vite fails loudly instead of quietly moving to 5174
+    // when the port is busy. The Sanity CORS allowlist names this exact origin,
+    // so a drifting port breaks every read the site and the Studio make.
+    port: 5173,
+    strictPort: true,
+  },
   build: {
     rollupOptions: {
       input: {
