@@ -73,8 +73,8 @@ export default function About() {
   const about = content?.about
 
   useEffect(() => {
-    initAnalytics('About')
-  }, [])
+    initAnalytics(settings?.gaMeasurementId, 'About')
+  }, [settings?.gaMeasurementId])
 
   useEffect(() => {
     if (content) applySeo(about?.seo, settings, '/about/')

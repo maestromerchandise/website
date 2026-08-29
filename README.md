@@ -15,7 +15,7 @@ Two pages only: the home page is one long anchor-scrolled document, and About is
 ```bash
 npm install               # installs the website and the Studio together
 cp .env.example .env      # then fill in the values by hand
-npm run dev               # http://localhost:5173
+npm run dev               # http://localhost:5137
 ```
 
 Without a `.env` the site renders from `content/seed.json`, so the design can be reviewed before a Sanity project exists.
@@ -33,12 +33,12 @@ npx sanity login
 Register every browser origin that will read the project. Sanity holds this as an allowlist on its own servers, so it cannot be set in `.env`, and until an origin is on the list both the Studio and the catalogue fail with a CORS error:
 
 ```bash
-npm run cors -- http://localhost:5173 --credentials   # the dev server
+npm run cors -- http://localhost:5137 --credentials   # the dev server
 npm run cors -- https://www.yourdomain.com --credentials
 npm run cors:list                                     # what is already allowed
 ```
 
-The Studio is served by the site itself at [/studio](http://localhost:5173/studio), so `npm run dev` is all that is needed to edit content. It is also still available on its own:
+The Studio is served by the site itself at [/studio](http://localhost:5137/studio), so `npm run dev` is all that is needed to edit content. It is also still available on its own:
 
 ```bash
 npm run studio                       # http://localhost:3333
@@ -71,7 +71,7 @@ The site and the Studio both read the `VITE_` pair, so the owner fills in one fi
 1. Create a project at [sanity.io/manage](https://www.sanity.io/manage) and copy its project id
 2. `cp .env.example .env`, then fill in the project id and dataset
 3. `npx sanity login` as the account that owns the project
-4. `npm run cors -- http://localhost:5173 --credentials`, and again for the live domain
+4. `npm run cors -- http://localhost:5137 --credentials`, and again for the live domain
 5. `npm run seed:cli` to put the starting content in place
 
 ## Usage
@@ -127,7 +127,7 @@ The body leads with the visitor's WhatsApp number, because that is how the team 
 
 ## Analytics
 
-Google Analytics 4, loaded only when `VITE_GA_MEASUREMENT_ID` is set. All tracking goes through `src/lib/analytics.ts`; no component touches `gtag` directly.
+Google Analytics 4, loaded only when a measurement id is set in Studio under **Site settings > Analytics**. It is not a build-time value, so the owner can add or change the property without a redeploy, and a site with the field empty makes no request to Google at all. All tracking goes through `src/lib/analytics.ts`; no component touches `gtag` directly.
 
 Tracked: page views, product detail opens, category clicks, Ready-Made opens, Custom Gift and Custom Box CTAs, enquiry submissions, WhatsApp clicks by location, chat opens and questions, and About navigation.
 

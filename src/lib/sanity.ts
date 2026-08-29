@@ -80,6 +80,7 @@ export type SiteSettings = {
   whatsappDefaultMessage?: string
   whatsappProductMessage?: string
   enquiryEmail?: string
+  gaMeasurementId?: string
   enquirySubject?: string
   contact?: Contact
   navigation?: { label: string; href: string }[]
@@ -153,6 +154,7 @@ const QUERY = `{
     whatsappDefaultMessage,
     whatsappProductMessage,
     enquiryEmail,
+    gaMeasurementId,
     enquirySubject,
     contact,
     navigation[]{label, href},

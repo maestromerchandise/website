@@ -44,8 +44,8 @@ export default function App() {
   const categories = content?.categories?.length ? content.categories : FALLBACK_CATEGORIES
 
   useEffect(() => {
-    initAnalytics('Home')
-  }, [])
+    initAnalytics(settings?.gaMeasurementId, 'Home')
+  }, [settings?.gaMeasurementId])
 
   useEffect(() => {
     if (content) applySeo(homepage?.seo, settings, '/')

@@ -16,6 +16,7 @@ export const siteSettings = defineType({
     { name: 'contact', title: 'Contact' },
     { name: 'navigation', title: 'Navigation and footer' },
     { name: 'seo', title: 'SEO defaults' },
+    { name: 'analytics', title: 'Analytics' },
   ],
   fields: [
     defineField({
@@ -75,6 +76,22 @@ export const siteSettings = defineType({
       description:
         'Pre-filled from a product popup. Write {product} where the product name should appear.',
       initialValue: 'Hello Maestro, I would like to ask about {product}.',
+    }),
+
+    defineField({
+      name: 'gaMeasurementId',
+      title: 'Google Analytics measurement ID',
+      type: 'string',
+      group: 'analytics',
+      description:
+        'Looks like G-XXXXXXXXXX, from the data stream in your Google Analytics property. Left empty, the site loads no analytics script at all.',
+      // Optional by design, so the check has to pass an empty value through.
+      validation: (rule) =>
+        rule.custom((value) =>
+          !value || /^G-[A-Z0-9]{4,}$/i.test(value)
+            ? true
+            : 'A measurement id looks like G-XXXXXXXXXX',
+        ),
     }),
 
     defineField({

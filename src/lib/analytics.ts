@@ -5,12 +5,17 @@
  * check what leaves the browser. The measurement id is a public value by
  * design; it identifies the property, it does not authorise anything.
  *
+ * The id comes from the CMS rather than the build, so the site owner can set it
+ * themselves without a redeploy, and a project handed to a new owner carries no
+ * trace of the previous property.
+ *
  * Nothing here ever receives a name, e-mail address, phone number or message
  * body. Conversion events carry a product title or a section id at most, which
  * are already public page content.
  */
 
-const MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID
+/** Set by initAnalytics once the settings arrive; until then nothing is sent. */
+let measurementId: string | undefined
 
 type GtagArguments =
   | ['js', Date]
@@ -25,20 +30,23 @@ declare global {
 }
 
 function isEnabled(): boolean {
-  // A missing id is the normal state in development and in a preview build, so
-  // it is a silent no-op rather than a warning nobody can act on.
-  return Boolean(MEASUREMENT_ID) && typeof window !== 'undefined'
+  // A missing id is the normal state before the settings load, in development
+  // and wherever the owner has not filled one in, so it is a silent no-op
+  // rather than a warning nobody can act on.
+  return Boolean(measurementId) && typeof window !== 'undefined'
 }
 
 /**
  * Load gtag and record the first page view.
  *
- * Called once per entry point. The script is appended rather than written into
- * the HTML so a build with no measurement id ships no third-party request at
- * all, which also keeps the preview and dev server free of it.
+ * Called from each entry point once the settings have loaded, and safe to call
+ * again: an id that is missing, or a script already on the page, both return
+ * early. The script is appended rather than written into the HTML, so a site
+ * with no measurement id makes no third-party request at all.
  */
-export function initAnalytics(pageTitle: string): void {
-  if (!isEnabled() || document.getElementById('ga4')) return
+export function initAnalytics(id: string | undefined, pageTitle: string): void {
+  if (!id || typeof window === 'undefined' || document.getElementById('ga4')) return
+  measurementId = id
 
   window.dataLayer = window.dataLayer ?? []
   window.gtag = function gtag(...args: GtagArguments) {
@@ -48,11 +56,11 @@ export function initAnalytics(pageTitle: string): void {
   const script = document.createElement('script')
   script.id = 'ga4'
   script.async = true
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`
   document.head.appendChild(script)
 
   window.gtag('js', new Date())
-  window.gtag('config', MEASUREMENT_ID, {
+  window.gtag('config', id, {
     page_title: pageTitle,
     page_path: window.location.pathname,
   })
