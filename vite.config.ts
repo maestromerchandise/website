@@ -53,10 +53,11 @@ export default defineConfig({
     pageDirectories(),
   ],
   server: {
-    // Pinned, and strict so Vite fails loudly instead of quietly moving to 5174
-    // when the port is busy. The Sanity CORS allowlist names this exact origin,
-    // so a drifting port breaks every read the site and the Studio make.
-    port: 5173,
+    // Pinned, and strict so Vite fails loudly instead of quietly moving to the
+    // next free port. The Sanity CORS allowlist names this exact origin, so a
+    // drifting port breaks every read the site and the Studio make. 5137 rather
+    // than Vite's default, which another project on this machine already holds.
+    port: 5137,
     strictPort: true,
   },
   build: {
