@@ -57,6 +57,13 @@ npm run seed        # needs SANITY_WRITE_TOKEN
 npm run seed:cli    # same content through the logged-in CLI, no token needed
 ```
 
+Attach a folder of product photography. The tree is `<NN. Category>/<page>/<Collection> - <Product>.png`; only `.png` is read, and a subject is attached only where its name matches a product, so a photograph never lands on the wrong one. It reports first and uploads nothing until `APPLY=1`:
+
+```bash
+IMAGES_DIR=/path/to/images npx sanity exec scripts/upload-images.mjs --with-user-token
+IMAGES_DIR=/path/to/images APPLY=1 npx sanity exec scripts/upload-images.mjs --with-user-token
+```
+
 Put the dataset back to the state it started in, which is how a test project is cleared before it changes hands. Both delete the dataset and recreate it, so every document and every uploaded image goes with it:
 
 ```bash
