@@ -86,20 +86,29 @@ test('enquiryMailto addresses the configured recipient with the visitor details'
     { enquiryEmail: 'sales@maestro.com', enquirySubject: 'Enquiry from {name}' },
     { name: 'Rahfi', email: 'r@example.com', phone: '628123', message: 'Ten tote bags please' },
   )
-  assert.ok(url.startsWith('mailto:sales@maestro.com?'), url)
-  assert.ok(url.includes('Enquiry%20from%20Rahfi'), 'subject carries the name')
-  assert.ok(url.includes('628123'), 'the WhatsApp number reaches the inbox')
-  assert.ok(url.includes('Ten%20tote%20bags%20please'), 'the message body is carried')
+  assert.ok(url?.startsWith('mailto:sales@maestro.com?'), String(url))
+  assert.ok(url!.includes('Enquiry%20from%20Rahfi'), 'subject carries the name')
+  assert.ok(url!.includes('628123'), 'the WhatsApp number reaches the inbox')
+  assert.ok(url!.includes('Ten%20tote%20bags%20please'), 'the message body is carried')
+})
+
+// The address lives in the CMS alone. A fallback written into the code would
+// send a stranger's enquiry to whoever owned that address, with the site owner
+// unable to change it.
+test('enquiryMailto returns null when no address is configured', () => {
+  const enquiry = { name: 'A', email: 'a@example.com', phone: '1', message: 'x' }
+  assert.equal(enquiryMailto(null, enquiry), null)
+  assert.equal(enquiryMailto({}, enquiry), null)
 })
 
 test('enquiryMailto encodes a space as %20, which every mail client accepts', () => {
-  const url = enquiryMailto(null, {
+  const url = enquiryMailto({ enquiryEmail: 'sales@maestro.com' }, {
     name: 'A B',
     email: 'a@example.com',
     phone: '1',
     message: 'x',
   })
-  assert.ok(!url.includes('+'), 'a + would show literally in the subject line')
+  assert.ok(!url!.includes('+'), 'a + would show literally in the subject line')
 })
 
 // Picking a colour has to change the photograph, which is the whole point of

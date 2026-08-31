@@ -4,7 +4,7 @@ import { EVENTS, track } from '../lib/analytics'
 import { enquiryMailto } from '../lib/enquiry'
 import type { SiteSettings } from '../lib/sanity'
 
-type Status = 'idle' | 'opened'
+type Status = 'idle' | 'opened' | 'unconfigured'
 
 /**
  * Get in touch form.
@@ -36,6 +36,13 @@ export function ContactForm({ settings }: { settings: SiteSettings | null | unde
       phone: String(fields.get('phone') ?? ''),
       message: String(fields.get('message') ?? ''),
     })
+
+    // No address in the CMS means there is nowhere to send this, so say so
+    // rather than opening a blank mail window.
+    if (!mailto) {
+      setStatus('unconfigured')
+      return
+    }
 
     // The event records that an enquiry was started. No field value is sent.
     track(EVENTS.enquirySubmit)
@@ -96,6 +103,8 @@ export function ContactForm({ settings }: { settings: SiteSettings | null | unde
       <p className="form-status" role="status">
         {status === 'opened' &&
           'Your e-mail app should now be open with the enquiry ready to send. If nothing happened, message us on WhatsApp instead.'}
+        {status === 'unconfigured' &&
+          'The enquiry address has not been set up yet. Please message us on WhatsApp instead.'}
       </p>
     </form>
   )

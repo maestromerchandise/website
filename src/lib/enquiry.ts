@@ -17,7 +17,6 @@ export type Enquiry = {
 }
 
 const DEFAULT_SUBJECT = 'Website enquiry from {name}'
-const DEFAULT_RECIPIENT = 'hello@maestro.com'
 
 /**
  * Some mail clients cut a `mailto:` at a few thousand characters. The message
@@ -39,9 +38,21 @@ function buildBody(enquiry: Enquiry): string {
   return lines.join('\n').slice(0, MAX_BODY)
 }
 
-/** The `mailto:` URL the form opens. */
-export function enquiryMailto(settings: SiteSettings | null | undefined, enquiry: Enquiry): string {
-  const recipient = settings?.enquiryEmail ?? DEFAULT_RECIPIENT
+/**
+ * The `mailto:` URL the form opens, or null when no address is configured.
+ *
+ * The recipient comes from the CMS alone. Falling back to an address written
+ * here would send a visitor's enquiry to whoever that address belonged to,
+ * silently and without the site owner ever being able to change it, so a
+ * missing setting stops the handoff instead.
+ */
+export function enquiryMailto(
+  settings: SiteSettings | null | undefined,
+  enquiry: Enquiry,
+): string | null {
+  const recipient = settings?.enquiryEmail
+  if (!recipient) return null
+
   const subject = (settings?.enquirySubject ?? DEFAULT_SUBJECT).replace('{name}', enquiry.name)
 
   const params = new URLSearchParams({ subject, body: buildBody(enquiry) })
