@@ -17,12 +17,45 @@
  * image and the numbered variants follow it into the gallery. The first product
  * photographed in a category also supplies that category's cover.
  *
+ * Every file is squared up before it is uploaded. The originals disagree on both
+ * counts that decide how large a product looks in a tile: their aspect runs from
+ * 0.30 to 1.50, and the subject fills anywhere between 45% and 100% of its
+ * canvas. Trimming the transparent margin and re-centring on one square canvas
+ * makes the products read at a consistent size beside each other.
+ *
  * Run through `sanity exec`, which hands the script a client already
  * authenticated as the logged-in user. Nothing here reads a token.
  */
-import { readdirSync, statSync, readFileSync } from 'node:fs'
+import { readdirSync, statSync } from 'node:fs'
 import { join, basename } from 'node:path'
 import { getCliClient } from 'sanity/cli'
+import sharp from 'sharp'
+
+/** The square every photograph is placed on, and how much of it the product fills. */
+const CANVAS = 1200
+const SUBJECT = Math.round(CANVAS * 0.88)
+
+/**
+ * Trim the empty margin, scale the product to one size, and centre it on a
+ * transparent square.
+ *
+ * Two passes because sharp takes a single resize per pipeline: the first fits
+ * the trimmed subject inside the target box, the second pads that out to the
+ * square. The padding is transparent, so the tile behind it stays the colour of
+ * the page.
+ */
+async function square(file) {
+  const subject = await sharp(file)
+    .trim({ threshold: 1 })
+    .resize(SUBJECT, SUBJECT, { fit: 'inside' })
+    .png()
+    .toBuffer()
+
+  return sharp(subject)
+    .resize(CANVAS, CANVAS, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png()
+    .toBuffer()
+}
 
 /** The numbered folders, in the order the catalogue lists its categories. */
 const FOLDER_TO_CATEGORY = {
@@ -168,13 +201,13 @@ const covered = new Set()
 
 for (const { product, group } of plan) {
   const [main, ...rest] = group.files
-  const mainAsset = await client.assets.upload('image', readFileSync(main.file), {
+  const mainAsset = await client.assets.upload('image', await square(main.file), {
     filename: basename(main.file),
   })
 
   const gallery = []
   for (const [index, image] of rest.entries()) {
-    const asset = await client.assets.upload('image', readFileSync(image.file), {
+    const asset = await client.assets.upload('image', await square(image.file), {
       filename: basename(image.file),
     })
     gallery.push({ ...reference(asset), _key: `g${index}` })
