@@ -484,7 +484,6 @@ a {
 .product-card .thumb {
   aspect-ratio: 1;
   width: 100%;
-  background: none;
 }
 
 /* The card lifts on hover, handled by Motion so it eases back down on leave.
@@ -529,11 +528,13 @@ a {
 }
 
 /* Placeholder tile, used until real photography is loaded into Sanity. */
+/* No background of its own. The photography is transparent png, so anything
+   painted here shows as a tinted box behind the product instead of the product
+   sitting on the page. Only the generated placeholder below paints a tile. */
 .thumb {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--bg-muted);
 }
 
 .thumb img {
@@ -547,10 +548,7 @@ a {
    pending items reads as a catalogue instead of one grey box repeated. Kept very
    pale and barely saturated, so it never competes with real photography beside
    it while the catalogue is filled in. */
-/* Two classes deliberately: a real photograph floats on the page with no tile
-   behind it (`.product-card .thumb` clears the background), and this has to
-   outrank that without reintroducing a box around the finished photography. */
-.thumb.thumb-placeholder {
+.thumb-placeholder {
   gap: 0.5rem;
   align-content: center;
   background: hsl(var(--placeholder-hue) 24% 93%);
