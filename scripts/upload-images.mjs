@@ -57,6 +57,24 @@ async function square(file) {
     .toBuffer()
 }
 
+/**
+ * The photograph that stands for each category in the strip under the masthead,
+ * chosen by looking at every subject in the folder rather than by name: the
+ * filenames are not reliable, one called "Coffee Tumbler" holds a linen pouch.
+ *
+ * Automotive, Apparel and Box are absent because their folders hold no png at
+ * all, only the psd working files, and Office has nothing but a desk lamp. Those
+ * four fall back to the first product photographed in the category, and want a
+ * proper export from the designer.
+ */
+const CATEGORY_COVER = {
+  'eco-essentials': 'Eco Essentials Collection - Urban Flask Bottle.png',
+  'travel-essentials': 'Travel Essenstials Collection - Toiletery Bag.png',
+  sports: 'Sport Collection - Golf Bag.png',
+  'smart-tech': 'PB Magsafe 01.png',
+  'home-living': 'Diffuser.png',
+}
+
 /** The numbered folders, in the order the catalogue lists its categories. */
 const FOLDER_TO_CATEGORY = {
   '01. Eco Essentials': 'eco-essentials',
@@ -217,8 +235,8 @@ for (const { product, group } of plan) {
     patch.set(gallery.length > 0 ? { image: reference(mainAsset), gallery } : { image: reference(mainAsset) }),
   )
 
-  // The first product photographed in a category also stands for the category.
-  if (!covered.has(group.category)) {
+  // A category with no chosen cover falls back to the first product it holds.
+  if (!CATEGORY_COVER[group.category] && !covered.has(group.category)) {
     covered.add(group.category)
     transaction.patch(`category-${group.category}`, (patch) =>
       patch.set({ coverImage: reference(mainAsset) }),
@@ -226,6 +244,20 @@ for (const { product, group } of plan) {
   }
 
   console.log(`uploaded ${group.files.length} for ${product.title}`)
+}
+
+// The chosen covers, uploaded whether or not their subject matched a product.
+const allFiles = walk(root)
+for (const [category, filename] of Object.entries(CATEGORY_COVER)) {
+  const file = allFiles.find((candidate) => basename(candidate) === filename)
+  if (!file) {
+    console.warn(`cover missing for ${category}: ${filename}`)
+    continue
+  }
+  const asset = await client.assets.upload('image', await square(file), { filename })
+  transaction.patch(`category-${category}`, (patch) => patch.set({ coverImage: reference(asset) }))
+  covered.add(category)
+  console.log(`cover for ${category}`)
 }
 
 await transaction.commit()
