@@ -140,6 +140,23 @@ Tracked: page views, product detail opens, category clicks, Ready-Made opens, Cu
 
 **No personal data is ever sent.** Events carry a product title, a category name or a section id, all of which are already public page content. No name, e-mail address, phone number or message body reaches Analytics.
 
+## Preview on Netlify
+
+Netlify hosts the preview; production is Hostinger, below. `netlify.toml` carries the build command, the publish directory, the Studio rewrite and a `noindex` header, so the preview never competes with the live domain in search and a fresh clone deploys without touching the dashboard. Two things still have to be set there by hand, under **Site configuration > Environment variables**:
+
+```
+VITE_SANITY_PROJECT_ID
+VITE_SANITY_DATASET
+SITE_URL                 # the production domain, so the preview never advertises its own address
+```
+
+The first two are read at build time and written into the bundle, so a deploy without them throws on load and the page renders blank rather than reporting anything. Register the deployed address as a CORS origin too, or the catalogue cannot be read:
+
+```bash
+npm run cors -- https://yoursite.netlify.app --credentials
+npm run cors -- https://yourdomain.com --credentials
+```
+
 ## Deploying to Hostinger
 
 1. Build with the real domain: `SITE_URL=https://www.yourdomain.com npm run build`.

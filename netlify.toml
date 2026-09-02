@@ -1,0 +1,42 @@
+# Netlify build and routing.
+#
+# Netlify is the preview environment; production is served from Hostinger, which
+# reads public/.htaccess instead of this file. Kept in the repository rather than
+# the site dashboard, so a redeploy from a fresh clone, or a handover to another
+# account, carries its own configuration.
+
+[build]
+  # Without this Netlify publishes the repository root, which serves the source
+  # index.html and its `/src/main.tsx` script. A browser cannot run TypeScript,
+  # so the page renders blank with no error.
+  command = "npm run build"
+  publish = "dist"
+
+# The Studio is a single-page app: it puts the document being edited in the path,
+# so /studio/structure/... must be served studio/index.html rather than 404. The
+# site's own pages are real files and are matched before this rule applies.
+# public/.htaccess does the same for Apache and is ignored here.
+[[redirects]]
+  from = "/studio/*"
+  to = "/studio/index.html"
+  status = 200
+
+# Headers mirror public/.htaccess: fingerprinted assets never change, everything
+# else has to revalidate or a deploy leaves stale HTML behind.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# The preview is a copy of the production site on a different address, so search
+# engines have to be told to leave it alone. Without this it competes with the
+# real domain for the same content. Hostinger serves the indexable copy.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
