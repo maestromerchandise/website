@@ -532,12 +532,22 @@ a {
    painted here shows as a tinted box behind the product instead of the product
    sitting on the page. Only the generated placeholder below paints a tile. */
 .thumb {
+  position: relative;
   display: grid;
   place-items: center;
   overflow: hidden;
 }
 
+/* Laid over the tile rather than placed in its grid. A percentage height inside
+   a grid area sized by aspect-ratio does not resolve, so the image fell back to
+   its natural height: a tall photograph grew to 381px in a 172px tile and was
+   cut off at the bottom, which read as that product being far larger than its
+   neighbours. Filling the tile absolutely gives object-fit a real box to contain
+   the photograph in. Every tile sets its own aspect-ratio, so none of them relies
+   on the image for its size. */
 .thumb img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
