@@ -67,9 +67,9 @@ function MaestroIcon() {
 
 /** Documents that exist exactly once, pinned so nobody can create a second. */
 const SINGLETONS = [
-  { type: 'siteSettings', title: 'Site settings' },
-  { type: 'homepage', title: 'Home page' },
-  { type: 'aboutPage', title: 'About page' },
+  { type: 'siteSettings', title: 'Site Settings' },
+  { type: 'homepage', title: 'Home Page' },
+  { type: 'aboutPage', title: 'About Page' },
 ]
 
 /**
@@ -130,7 +130,7 @@ export function createStudioConfig({
               ),
               S.divider(),
               S.documentTypeListItem('product').title('Products'),
-              S.documentTypeListItem('productCategory').title('Product categories'),
+              S.documentTypeListItem('productCategory').title('Product Categories'),
             ]),
       }),
     ],

@@ -72,7 +72,7 @@ export const product = defineType({
             },
             {
               name: 'image',
-              title: 'Photograph in this colour',
+              title: 'Photograph In This Colour',
               type: 'image',
               options: { hotspot: true },
               description:
@@ -86,7 +86,7 @@ export const product = defineType({
 
     defineField({
       name: 'image',
-      title: 'Main image',
+      title: 'Main Image',
       type: 'image',
       group: 'media',
       options: { hotspot: true },
@@ -96,7 +96,7 @@ export const product = defineType({
     }),
     defineField({
       name: 'gallery',
-      title: 'Detail images',
+      title: 'Detail Images',
       type: 'array',
       group: 'media',
       of: [{ type: 'image', options: { hotspot: true } }],
@@ -105,7 +105,7 @@ export const product = defineType({
 
     defineField({
       name: 'readyMade',
-      title: 'Show in Ready-Made',
+      title: 'Show In Ready-Made',
       type: 'boolean',
       group: 'placement',
       initialValue: false,
@@ -118,7 +118,7 @@ export const product = defineType({
       initialValue: 100,
     }),
   ],
-  orderings: [{ name: 'order', title: 'Display order', by: [{ field: 'order', direction: 'asc' }] }],
+  orderings: [{ name: 'order', title: 'Display Order', by: [{ field: 'order', direction: 'asc' }] }],
   preview: {
     select: { title: 'title', subtitle: 'category.title', media: 'image' },
   },

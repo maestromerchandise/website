@@ -10,7 +10,7 @@ const sectionCopy = (name: string, title: string, defaults: { heading: string; i
     fields: [
       { name: 'heading', type: 'string', initialValue: defaults.heading },
       ...(defaults.intro
-        ? [{ name: 'intro', title: 'Intro copy', type: 'text' as const, rows: 3, initialValue: defaults.intro }]
+        ? [{ name: 'intro', title: 'Intro Copy', type: 'text' as const, rows: 3, initialValue: defaults.intro }]
         : []),
     ],
   })
@@ -22,7 +22,7 @@ const CUSTOM_COPY =
 /** Singleton holding the home page copy and its curated product ordering. */
 export const homepage = defineType({
   name: 'homepage',
-  title: 'Home page',
+  title: 'Home Page',
   type: 'document',
   groups: [
     { name: 'hero', title: 'Hero', default: true },
@@ -53,7 +53,7 @@ export const homepage = defineType({
 
     defineField({
       name: 'contactLead',
-      title: 'Get in touch heading copy',
+      title: 'Get In Touch Heading Copy',
       type: 'object',
       group: 'sections',
       fields: [
@@ -64,7 +64,7 @@ export const homepage = defineType({
 
     defineField({
       name: 'featuredProducts',
-      title: 'Featured products',
+      title: 'Featured Products',
       type: 'array',
       group: 'sections',
       description:
@@ -74,7 +74,7 @@ export const homepage = defineType({
 
     defineField({
       name: 'clientLogos',
-      title: 'Client logos',
+      title: 'Client Logos',
       // A Sanity array is drag and drop reorderable out of the box, which is
       // also what gives the featured ordering above its ordering control.
       type: 'array',
@@ -112,5 +112,5 @@ export const homepage = defineType({
 
     defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
   ],
-  preview: { prepare: () => ({ title: 'Home page' }) },
+  preview: { prepare: () => ({ title: 'Home Page' }) },
 })

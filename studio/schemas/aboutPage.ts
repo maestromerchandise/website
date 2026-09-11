@@ -21,7 +21,7 @@ const titledEntry = (name: string, title: string, description: string) =>
 /** Singleton holding everything on the About page. */
 export const aboutPage = defineType({
   name: 'aboutPage',
-  title: 'About page',
+  title: 'About Page',
   type: 'document',
   groups: [
     { name: 'content', title: 'Content', default: true },
@@ -44,7 +44,7 @@ export const aboutPage = defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Introduction image',
+      title: 'Introduction Image',
       type: 'image',
       options: { hotspot: true },
       group: 'content',
@@ -52,7 +52,7 @@ export const aboutPage = defineType({
     titledEntry('whyChooseUs', 'Why Choose Us', 'Drag to reorder.'),
     defineField({
       name: 'whyChooseUsImage',
-      title: 'Why Choose Us image',
+      title: 'Why Choose Us Image',
       type: 'image',
       options: { hotspot: true },
       group: 'content',
@@ -60,12 +60,12 @@ export const aboutPage = defineType({
     titledEntry('services', 'Our Service', 'Drag to reorder.'),
     defineField({
       name: 'servicesImage',
-      title: 'Our Service image',
+      title: 'Our Service Image',
       type: 'image',
       options: { hotspot: true },
       group: 'content',
     }),
     defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
   ],
-  preview: { prepare: () => ({ title: 'About page' }) },
+  preview: { prepare: () => ({ title: 'About Page' }) },
 })

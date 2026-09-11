@@ -8,20 +8,20 @@ import { defineArrayMember, defineField, defineType } from 'sanity'
  */
 export const siteSettings = defineType({
   name: 'siteSettings',
-  title: 'Site settings',
+  title: 'Site Settings',
   type: 'document',
   groups: [
     { name: 'general', title: 'General', default: true },
     { name: 'whatsapp', title: 'WhatsApp' },
     { name: 'contact', title: 'Contact' },
-    { name: 'navigation', title: 'Navigation and footer' },
-    { name: 'seo', title: 'SEO defaults' },
+    { name: 'navigation', title: 'Navigation And Footer' },
+    { name: 'seo', title: 'SEO Defaults' },
     { name: 'analytics', title: 'Analytics' },
   ],
   fields: [
     defineField({
       name: 'siteUrl',
-      title: 'Production site address',
+      title: 'Production Site Address',
       type: 'url',
       group: 'general',
       description:
@@ -31,7 +31,7 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'siteName',
-      title: 'Site name',
+      title: 'Site Name',
       type: 'string',
       group: 'general',
       initialValue: 'Maestro',
@@ -39,7 +39,7 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'mastheadText',
-      title: 'Masthead line',
+      title: 'Masthead Line',
       type: 'string',
       group: 'general',
       description: 'The small centred line above the header.',
@@ -48,7 +48,7 @@ export const siteSettings = defineType({
 
     defineField({
       name: 'whatsappNumber',
-      title: 'WhatsApp number',
+      title: 'WhatsApp Number',
       type: 'string',
       group: 'whatsapp',
       description:
@@ -62,7 +62,7 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'whatsappDefaultMessage',
-      title: 'Default WhatsApp message',
+      title: 'Default WhatsApp Message',
       type: 'string',
       group: 'whatsapp',
       description: 'Pre-filled when someone taps a general WhatsApp button.',
@@ -70,7 +70,7 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'whatsappProductMessage',
-      title: 'Product WhatsApp message',
+      title: 'Product WhatsApp Message',
       type: 'string',
       group: 'whatsapp',
       description:
@@ -80,7 +80,7 @@ export const siteSettings = defineType({
 
     defineField({
       name: 'gaMeasurementId',
-      title: 'Google Analytics measurement ID',
+      title: 'Google Analytics Measurement ID',
       type: 'string',
       group: 'analytics',
       description:
@@ -96,7 +96,7 @@ export const siteSettings = defineType({
 
     defineField({
       name: 'enquiryEmail',
-      title: 'Enquiry e-mail address',
+      title: 'Enquiry E-Mail Address',
       type: 'string',
       group: 'contact',
       description:
@@ -106,7 +106,7 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'enquirySubject',
-      title: 'Enquiry e-mail subject',
+      title: 'Enquiry E-Mail Subject',
       type: 'string',
       group: 'contact',
       description: 'Write {name} where the visitor name should appear.',
@@ -114,13 +114,13 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'contact',
-      title: 'Contact details',
+      title: 'Contact Details',
       type: 'object',
       group: 'contact',
       fields: [
         { name: 'address', type: 'string' },
-        { name: 'email', title: 'Public e-mail', type: 'string' },
-        { name: 'phone', title: 'Public phone', type: 'string' },
+        { name: 'email', title: 'Public E-Mail', type: 'string' },
+        { name: 'phone', title: 'Public Phone', type: 'string' },
         { name: 'instagram', type: 'url' },
         { name: 'tiktok', type: 'url' },
         { name: 'mapsUrl', title: 'Google Maps URL', type: 'url' },
@@ -129,7 +129,7 @@ export const siteSettings = defineType({
 
     defineField({
       name: 'navigation',
-      title: 'Header navigation',
+      title: 'Header Navigation',
       type: 'array',
       group: 'navigation',
       description:
@@ -156,7 +156,7 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'footerNote',
-      title: 'Footer line',
+      title: 'Footer Line',
       type: 'string',
       group: 'navigation',
       initialValue: 'Maestro. Modern merchandising, responsible impact.',
@@ -164,11 +164,11 @@ export const siteSettings = defineType({
 
     defineField({
       name: 'defaultSeo',
-      title: 'SEO defaults',
+      title: 'SEO Defaults',
       type: 'seo',
       group: 'seo',
       description: 'Used for any page that leaves its own SEO fields empty.',
     }),
   ],
-  preview: { prepare: () => ({ title: 'Site settings' }) },
+  preview: { prepare: () => ({ title: 'Site Settings' }) },
 })

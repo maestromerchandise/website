@@ -15,14 +15,14 @@ export const seo = defineType({
   fields: [
     defineField({
       name: 'metaTitle',
-      title: 'Meta title',
+      title: 'Meta Title',
       type: 'string',
       description: 'Shown in the browser tab and as the search result headline. Around 60 characters.',
       validation: (rule) => rule.max(70).warning('Search results usually cut off past 60 characters.'),
     }),
     defineField({
       name: 'metaDescription',
-      title: 'Meta description',
+      title: 'Meta Description',
       type: 'text',
       rows: 3,
       description: 'The grey summary under a search result. Around 155 characters.',
@@ -30,20 +30,20 @@ export const seo = defineType({
     }),
     defineField({
       name: 'ogTitle',
-      title: 'Share title',
+      title: 'Share Title',
       type: 'string',
       description: 'Used when the page is shared to WhatsApp, Instagram or LinkedIn. Falls back to the meta title.',
     }),
     defineField({
       name: 'ogDescription',
-      title: 'Share description',
+      title: 'Share Description',
       type: 'text',
       rows: 3,
       description: 'Falls back to the meta description.',
     }),
     defineField({
       name: 'ogImage',
-      title: 'Share image',
+      title: 'Share Image',
       type: 'image',
       description: 'Shown as the preview card when the page is shared. 1200 x 630 works everywhere.',
     }),
@@ -56,7 +56,7 @@ export const seo = defineType({
     }),
     defineField({
       name: 'noIndex',
-      title: 'Hide from search engines',
+      title: 'Hide From Search Engines',
       type: 'boolean',
       description: 'Turn on to keep this page out of Google. Leave off for a live page.',
       initialValue: false,

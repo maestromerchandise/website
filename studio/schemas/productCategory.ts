@@ -9,7 +9,7 @@ import { defineField, defineType } from 'sanity'
  */
 export const productCategory = defineType({
   name: 'productCategory',
-  title: 'Product category',
+  title: 'Product Category',
   type: 'document',
   fields: [
     defineField({
@@ -21,7 +21,7 @@ export const productCategory = defineType({
     }),
     defineField({
       name: 'slug',
-      title: 'Section id',
+      title: 'Section ID',
       type: 'slug',
       options: { source: 'title', maxLength: 40 },
       description:
@@ -30,21 +30,21 @@ export const productCategory = defineType({
     }),
     defineField({
       name: 'anchorOverride',
-      title: 'Scroll to another section instead',
+      title: 'Scroll To Another Section Instead',
       type: 'string',
       description:
         'Leave empty for normal behaviour. Box uses custom-box, so its card scrolls to the Custom Box section rather than repeating the products.',
     }),
     defineField({
       name: 'coverImage',
-      title: 'Category image',
+      title: 'Category Image',
       type: 'image',
       options: { hotspot: true },
       description: 'Shown on the category card. Left empty, the first product image is used.',
     }),
     defineField({
       name: 'showInStrip',
-      title: 'Show in the category row',
+      title: 'Show In The Category Row',
       type: 'boolean',
       initialValue: true,
     }),
@@ -57,7 +57,7 @@ export const productCategory = defineType({
     }),
   ],
   orderings: [
-    { name: 'order', title: 'Display order', by: [{ field: 'order', direction: 'asc' }] },
+    { name: 'order', title: 'Display Order', by: [{ field: 'order', direction: 'asc' }] },
   ],
   preview: { select: { title: 'title', subtitle: 'slug.current', media: 'coverImage' } },
 })
