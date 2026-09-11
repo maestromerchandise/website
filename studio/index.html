@@ -10,6 +10,15 @@
          from a search result. It still requires a Sanity login to do anything. -->
     <meta name="robots" content="noindex, nofollow" />
 
+    <!-- The site's typeface, so the Studio theme's font family resolves to
+         Montserrat here rather than falling back to the system font. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Sanity ships its own styling; the site stylesheet is deliberately not
          loaded here so its body rules cannot fight the Studio chrome. -->
     <style>
@@ -18,6 +27,9 @@
       #root {
         height: 100%;
         margin: 0;
+        /* Anything rendered outside Sanity's themed tree inherits this rather
+           than the browser default serif. */
+        font-family: Montserrat, system-ui, sans-serif;
       }
     </style>
   </head>

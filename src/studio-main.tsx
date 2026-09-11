@@ -16,6 +16,9 @@ import { config } from './lib/config'
  */
 createRoot(document.getElementById('root')!).render(
   <Studio
+    // Pinned to light. Left to follow the operating system, a machine in dark
+    // mode opens the Studio on a dark ground and the white theme never shows.
+    scheme="light"
     config={createStudioConfig({
       projectId: config.sanityProjectId,
       dataset: config.sanityDataset,
