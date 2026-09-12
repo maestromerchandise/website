@@ -1,4 +1,6 @@
+import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
+import type { Ref } from 'react'
 import { galleryImages, shownImage } from '../lib/gallery'
 import type { Product } from '../lib/sanity'
 import { Thumb } from './Thumb'
@@ -6,6 +8,11 @@ import { Thumb } from './Thumb'
 type Props = {
   product: Product
   onClose: () => void
+  /**
+   * Passed by the grid's AnimatePresence, which has to measure a closing panel
+   * to lift it out of the layout while it fades.
+   */
+  ref?: Ref<HTMLDivElement>
 }
 
 /**
@@ -14,18 +21,22 @@ type Props = {
  * The panel expands in the flow of the grid it was opened from, so the page
  * keeps scrolling as one document and nothing is hidden behind an overlay.
  *
- * Picking a colour swaps the photograph when the CMS carries one for that
- * colour, which is what makes the swatches a way of seeing the product rather
- * than a legend printed beside it.
+ * The swatches list the colours a product is made in and are not a control; the
+ * gallery thumbnails are the one way to change the photograph.
  */
-export function ProductDetail({ product, onClose }: Props) {
-  const panelRef = useRef<HTMLDivElement>(null)
-  const [activeColor, setActiveColor] = useState<string>()
+export function ProductDetail({ product, onClose, ref }: Props) {
+  const prefersReducedMotion = useReducedMotion()
+  const headingRef = useRef<HTMLHeadingElement>(null)
   const [pickedImage, setPickedImage] = useState<string>()
 
   const colors = product.colors ?? []
   const gallery = galleryImages(product)
-  const shown = shownImage(product, activeColor, pickedImage)
+  // No colour is ever picked now, so the photograph is the chosen thumbnail or
+  // the main shot.
+  const shown = shownImage(product, undefined, pickedImage)
+
+  /** The same float the product tiles have, scaled to a thumbnail's size. */
+  const lift = prefersReducedMotion ? {} : { whileHover: { y: -6 }, whileTap: { y: -2 } }
 
   // The panel opens where the product is, and the page stays put. Scrolling to
   // it would move the catalogue out from under the tile that was just clicked,
@@ -35,7 +46,7 @@ export function ProductDetail({ product, onClose }: Props) {
   // has to be told the panel appeared. `preventScroll` is what keeps that from
   // scrolling the page as a side effect.
   useEffect(() => {
-    panelRef.current?.querySelector<HTMLElement>('h3')?.focus({ preventScroll: true })
+    headingRef.current?.focus({ preventScroll: true })
   }, [product.id])
 
   // Escape closes, matching what the dialog used to do.
@@ -48,7 +59,23 @@ export function ProductDetail({ product, onClose }: Props) {
   }, [onClose])
 
   return (
-    <div className="product-detail" ref={panelRef}>
+    // Fades in on opening and out on closing. The exit only gets to run because
+    // the grid keeps a closing panel mounted until it has finished.
+    <motion.div
+      ref={ref}
+      className="product-detail"
+      initial={{ opacity: 0, y: -6 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.24, ease: 'easeOut' },
+      }}
+      exit={{
+        opacity: 0,
+        y: -6,
+        transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.18, ease: 'easeIn' },
+      }}
+    >
       <button type="button" className="detail-close" onClick={onClose} aria-label="Close details">
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4">
           <path d="M5 5l14 14M19 5L5 19" strokeLinecap="round" />
@@ -60,28 +87,25 @@ export function ProductDetail({ product, onClose }: Props) {
         {gallery.length > 1 && (
           <div className="detail-strip">
             {gallery.map((image, index) => (
-              <button
+              <motion.button
                 key={image}
                 type="button"
                 className="gallery-pick"
                 aria-current={image === shown}
-                onClick={() => {
-                  setPickedImage(image)
-                  // A gallery choice overrides the colour photograph, or the two
-                  // controls would fight over the same picture.
-                  setActiveColor(undefined)
-                }}
+                onClick={() => setPickedImage(image)}
                 aria-label={`Show image ${index + 1} of ${product.title}`}
+                {...lift}
+                transition={{ type: 'spring', stiffness: 320, damping: 26 }}
               >
                 <Thumb source={image} alt="" width={120} />
-              </button>
+              </motion.button>
             ))}
           </div>
         )}
       </div>
 
       <div className="detail-body">
-        <h3 className="display" tabIndex={-1}>
+        <h3 className="display" tabIndex={-1} ref={headingRef}>
           {product.title}
         </h3>
         {product.tagline && <p className="detail-tagline">{product.tagline}</p>}
@@ -111,31 +135,15 @@ export function ProductDetail({ product, onClose }: Props) {
 
         {colors.length > 0 && (
           <>
-            <h4 className="eyebrow">
-              Colour
-              {activeColor && (
-                <span className="colour-name">
-                  {colors.find((color) => color.hex === activeColor)?.name}
-                </span>
-              )}
-            </h4>
-            <ul className="swatches">
+            <h4 className="eyebrow">Colour</h4>
+            {/* For reference only: the colours the product comes in, not a
+                control. Each dot still names its colour, for a screen reader
+                and as a tooltip, since the fill alone would not survive
+                greyscale or colour blindness. */}
+            <ul className="swatches" aria-label={`Colours available for ${product.title}`}>
               {colors.map((color) => (
-                <li key={color.hex}>
-                  <button
-                    type="button"
-                    className="swatch"
-                    style={{ background: color.hex }}
-                    aria-pressed={color.hex === activeColor}
-                    onClick={() => {
-                      setActiveColor(color.hex === activeColor ? undefined : color.hex)
-                      setPickedImage(undefined)
-                    }}
-                  >
-                    {/* The name carries the meaning; the fill alone would not
-                        survive greyscale or colour blindness. */}
-                    <span className="skip-link">{color.name}</span>
-                  </button>
+                <li key={color.hex} className="swatch" style={{ background: color.hex }} title={color.name}>
+                  <span className="skip-link">{color.name}</span>
                 </li>
               ))}
             </ul>
@@ -143,6 +151,6 @@ export function ProductDetail({ product, onClose }: Props) {
         )}
 
       </div>
-    </div>
+    </motion.div>
   )
 }

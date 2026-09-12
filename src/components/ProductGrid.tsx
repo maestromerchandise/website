@@ -1,23 +1,21 @@
-import { motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import type { Product } from '../lib/sanity'
 import { ProductDetail } from './ProductDetail'
 import { Thumb } from './Thumb'
 
 /** Which half of a row a tile belongs to, and so which panel it opens. */
-export type Side = 'left' | 'right'
+type Side = 'left' | 'right'
 
 type Props = {
   products: Product[]
   /**
-   * The visitor's state for this grid: the tile they clicked last, which decides
-   * the row both panels sit on, and the sides they have closed. Everything else
-   * falls back to the first product of each half, which is what makes a section
-   * arrive showing two products rather than a bare row of tiles.
+   * The products the visitor has opened in this grid, oldest first. Empty until
+   * a tile is clicked, so the grid arrives as tiles alone.
    */
-  selected: { product?: Product; closed?: Side[] }
-  onSelect: (product: Product, side: Side) => void
-  onClose: (side: Side) => void
+  open: Product[]
+  onOpen: (product: Product) => void
+  onClose: (product: Product) => void
 }
 
 /**
@@ -27,16 +25,17 @@ type Props = {
  * so the name and the image are a single 44px-plus target and a screen reader
  * announces one control instead of two that do the same thing.
  *
- * A row is read as two halves and each half carries its own panel, the pair
- * sitting side by side so two products can be compared at once. A row holding a
- * single tile has no halves to divide and opens one panel instead.
+ * A row is read as two halves and each half can hold one open panel, the pair
+ * sitting side by side so two products can be compared at once. Nothing opens
+ * until a tile is picked; picking a tile on the other half of the same row adds
+ * a second panel beside the first.
  *
  * Panels are placed after the last tile of their row rather than after the tile
  * that opened them. A panel is a wide grid item and cannot share a row with a
  * tile, so inserting one mid-row would push the tiles that followed below it and
  * leave the open tile standing alone.
  */
-export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
+export function ProductGrid({ products, open, onOpen, onClose }: Props) {
   const prefersReducedMotion = useReducedMotion()
   const gridRef = useRef<HTMLDivElement>(null)
   const [columns, setColumns] = useState(1)
@@ -69,17 +68,6 @@ export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
   const countInRow = (row: number) => lastOfRow(row) - rowStart(row) + 1
 
   /**
-   * How many panels a row opens: two when it holds more than one tile, one when
-   * it holds a single tile and so has no halves to divide.
-   *
-   * Judged per row rather than from the size of the whole catalogue. Counting
-   * the catalogue gave Ready-Made, with fifteen products across three full rows,
-   * a single panel purely because fifteen is odd, which reads as a mistake next
-   * to every other section.
-   */
-  const isPairedRow = (row: number) => countInRow(row) > 1
-
-  /**
    * Where a row splits into its two halves, measured from the tiles the row
    * actually holds rather than from the column count. A part-filled last row is
    * narrower than the grid, and splitting it at half the columns would send the
@@ -92,29 +80,24 @@ export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
   const sideOf = (index: number): Side =>
     index - rowStart(rowOf(index)) < halfOf(rowOf(index)) ? 'left' : 'right'
 
-  /**
-   * The open panels stay on one row: the row of the tile clicked last, with any
-   * second side falling back to the first product of its own half. Letting the
-   * two drift onto different rows would strand a lone panel under each.
-   */
-  const clicked = selected.product ? products.indexOf(selected.product) : -1
-  const clickedSide = clicked < 0 ? undefined : sideOf(clicked)
-
-  /** The row the panels sit under: the clicked tile's, or the first row. */
-  const openRowIndex = clicked >= 0 ? rowOf(clicked) : 0
-  const sides = isPairedRow(openRowIndex) ? (['left', 'right'] as const) : (['left'] as const)
+  const indexOf = (product: Product) =>
+    products.findIndex((candidate) => candidate.id === product.id)
 
   /**
-   * Which product each open side shows: the tile clicked, and for the other side
-   * the first product of its half of the same row.
+   * The open panels share one row: the row of the product opened last. An older
+   * pick on another row is left out rather than stranded as a lone panel under a
+   * row the visitor has moved away from, and a later pick on the same half
+   * replaces the earlier one. A product filtered out of this grid is skipped.
    */
+  const shown = open.filter((product) => indexOf(product) >= 0)
+  const latest = shown.at(-1)
+  const openRowIndex = latest ? rowOf(indexOf(latest)) : -1
   const openRow: Partial<Record<Side, Product>> = {}
-  for (const side of sides) {
-    if (selected.closed?.includes(side)) continue
-    const fallback = rowStart(openRowIndex) + (side === 'left' ? 0 : halfOf(openRowIndex))
-    const product = side === clickedSide ? products[clicked] : products[fallback]
-    if (product && rowOf(products.indexOf(product)) === openRowIndex) openRow[side] = product
+  for (const product of shown) {
+    const index = indexOf(product)
+    if (rowOf(index) === openRowIndex) openRow[sideOf(index)] = product
   }
+  const openSides = (['left', 'right'] as const).filter((side) => openRow[side])
 
   /**
    * The lift sits on the card rather than on the photograph, because a product
@@ -126,15 +109,16 @@ export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
     ? {}
     : { whileHover: { y: -10 }, whileTap: { y: -4 } }
 
+  /** The pair fades as one; ProductDetail fades each panel inside it. */
+  const enter = prefersReducedMotion ? { duration: 0 } : { duration: 0.24, ease: 'easeOut' as const }
+  const leave = prefersReducedMotion ? { duration: 0 } : { duration: 0.18, ease: 'easeIn' as const }
+
   return (
     <div className="product-grid" ref={gridRef}>
       {products.map((product, index) => {
         const side = sideOf(index)
-        const isOpen = rowOf(index) === openRowIndex && openRow[side]?.id === product.id
-        // The panels are siblings of the tiles in the same grid, so they land on
-        // the row below rather than being trapped inside one cell's width.
-        const panels =
-          rowOf(index) === openRowIndex && index === lastOfRow(openRowIndex) ? openRow : undefined
+        const row = rowOf(index)
+        const isOpen = row === openRowIndex && openRow[side]?.id === product.id
 
         return (
           <Fragment key={product.id}>
@@ -145,7 +129,7 @@ export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
               type="button"
               className="product-card"
               aria-expanded={isOpen}
-              onClick={() => (isOpen ? onClose(side) : onSelect(product, side))}
+              onClick={() => (isOpen ? onClose(product) : onOpen(product))}
               {...lift}
               transition={{ type: 'spring', stiffness: 320, damping: 26 }}
             >
@@ -153,19 +137,38 @@ export function ProductGrid({ products, selected, onSelect, onClose }: Props) {
               <Thumb source={product.image} alt={product.title} width={240} />
             </motion.button>
 
-            {panels && (panels.left || panels.right) && (
-              <div className="detail-pair">
-                {(['left', 'right'] as const).map((panelSide) => {
-                  const open = panels[panelSide]
-                  return open ? (
-                    <ProductDetail
-                      key={panelSide}
-                      product={open}
-                      onClose={() => onClose(panelSide)}
-                    />
-                  ) : null
-                })}
-              </div>
+            {/* One presence at the end of every row, and mounted from the start,
+                so a pair leaving this row stays in place until its fade has
+                finished. React would otherwise remove it the moment it closed. */}
+            {index === lastOfRow(row) && (
+              <AnimatePresence initial={false}>
+                {row === openRowIndex && openSides.length > 0 && (
+                  <motion.div
+                    key="pair"
+                    className="detail-pair"
+                    data-count={openSides.length}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, transition: enter }}
+                    exit={{ opacity: 0, transition: leave }}
+                  >
+                    {/* popLayout takes a closing panel out of the flow while it
+                        fades, so the panel beside it does not jump into its slot
+                        before the fade has ended. */}
+                    <AnimatePresence initial={false} mode="popLayout">
+                      {openSides.map((panelSide) => {
+                        const panel = openRow[panelSide] as Product
+                        return (
+                          <ProductDetail
+                            key={panel.id}
+                            product={panel}
+                            onClose={() => onClose(panel)}
+                          />
+                        )
+                      })}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             )}
           </Fragment>
         )
