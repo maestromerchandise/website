@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { CategoryStrip } from './components/CategoryStrip'
 import { ChatWidget } from './components/ChatWidget'
 import { ContactForm } from './components/ContactForm'
@@ -11,7 +12,7 @@ import { WhatsAppButton } from './components/WhatsAppButton'
 import { EVENTS, initAnalytics, track } from './lib/analytics'
 import { FALLBACK_CATEGORIES, hasOwnSection } from './lib/categories'
 import type { Product } from './lib/sanity'
-import { scrollToSection } from './lib/scroll'
+import { prefersReducedMotion, scrollToSection } from './lib/scroll'
 import { applySeo } from './lib/seo'
 import { useSiteContent } from './lib/useSiteContent'
 import { whatsappLink } from './lib/whatsapp'
@@ -54,6 +55,23 @@ export default function App() {
 
   const generalWhatsapp = whatsappLink(settings)
   const isSearching = query.trim().length > 0
+
+  /**
+   * Products whose name matches the query, for the list under the search field.
+   * A name that starts with the query ranks above one that only contains it, so
+   * typing "pad" puts "Padel Racket" first.
+   */
+  const needle = query.trim().toLowerCase()
+  const suggestions = needle
+    ? all
+        .filter((product) => product.title.toLowerCase().includes(needle))
+        .sort(
+          (a, b) =>
+            Number(b.title.toLowerCase().startsWith(needle)) -
+            Number(a.title.toLowerCase().startsWith(needle)),
+        )
+        .slice(0, 6)
+    : []
 
   /** Shared by Custom Gift and Custom Box, which offer the same two actions. */
   const customCta = (event: typeof EVENTS.customGiftCta | typeof EVENTS.customBoxCta) => (
@@ -106,12 +124,39 @@ export default function App() {
     })
   }
 
+  /**
+   * Take the visitor from a suggestion to the product itself: clear the search
+   * so the whole catalogue is back, open the product in the grid it lives in,
+   * then bring its tile into view.
+   *
+   * flushSync commits both updates before the tile is looked up, so the scroll
+   * lands where the tile finally sits, with its panel already inserted beneath
+   * it, rather than where it was in the filtered page a frame earlier.
+   */
+  function jumpToProduct(product: Product) {
+    const category = categories.find((candidate) => candidate.id === product.category)
+    // Boxes have no section of their own; their category points at Custom Box.
+    const gridId = category && !hasOwnSection(category) ? category.anchor : product.category
+    flushSync(() => {
+      setQuery('')
+      openProduct(product, gridId === 'custom-box' ? 'custom_box' : 'category', gridId)
+    })
+    const tile = document.querySelector<HTMLElement>(
+      `#${CSS.escape(gridId)} [data-product="${CSS.escape(product.id)}"]`,
+    )
+    tile?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' })
+    tile?.focus({ preventScroll: true })
+  }
+
   return (
     <>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
-      <Header settings={settings} search={{ value: query, onChange: setQuery }} />
+      <Header
+        settings={settings}
+        search={{ value: query, onChange: setQuery, suggestions, onPick: jumpToProduct }}
+      />
 
       <main id="main">
         <div className="tagline">

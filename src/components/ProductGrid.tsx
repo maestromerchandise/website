@@ -128,6 +128,7 @@ export function ProductGrid({ products, open, onOpen, onClose }: Props) {
             <motion.button
               type="button"
               className="product-card"
+              data-product={product.id}
               aria-expanded={isOpen}
               onClick={() => (isOpen ? onClose(product) : onOpen(product))}
               {...lift}

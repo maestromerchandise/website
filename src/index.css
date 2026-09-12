@@ -273,6 +273,46 @@ a {
   width: min(9rem, 22vw);
 }
 
+/* Suggestions open beneath the magnifier. The tools column is their positioning
+   box, so the list lines up with the field at every width. */
+.header-tools {
+  position: relative;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 50;
+  width: min(20rem, calc(100vw - 2 * var(--gutter)));
+  margin: 0;
+  padding: 0.35rem 0;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 28px rgb(60 48 38 / 0.1);
+}
+
+.search-suggestion {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8125rem;
+  color: var(--text-body);
+  cursor: pointer;
+}
+
+.search-suggestion[aria-selected='true'] {
+  color: var(--text);
+  background: var(--bg-muted);
+}
+
+/* A tile reached from a suggestion lands below the sticky header, not under it. */
+.product-card {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
 /* The hamburger replaces the inline nav under the mobile breakpoint. */
 .menu-toggle {
   display: none;
