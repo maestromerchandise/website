@@ -12,6 +12,8 @@ type Props = {
   products: Product[]
   /** Categories with no product are hidden on the Custom Gift strip, shown under the masthead. */
   hideEmpty?: boolean
+  /** The strip under the masthead is on the first screen, so its photographs load first. */
+  priority?: boolean
 }
 
 /**
@@ -21,7 +23,7 @@ type Props = {
  * without a layout change. On a narrow screen the row scrolls sideways rather
  * than shrinking its items past the point of being readable.
  */
-export function CategoryStrip({ categories, products, hideEmpty = false }: Props) {
+export function CategoryStrip({ categories, products, hideEmpty = false, priority = false }: Props) {
   const prefersReducedMotion = useReducedMotion()
 
   /** The same lift the product tiles use, so every card on the page behaves alike. */
@@ -59,7 +61,12 @@ export function CategoryStrip({ categories, products, hideEmpty = false }: Props
               {...lift}
               transition={{ type: 'spring', stiffness: 320, damping: 26 }}
             >
-              <Thumb source={coverFor(category, products)} alt={category.label} width={200} />
+              <Thumb
+                source={coverFor(category, products)}
+                alt={category.label}
+                width={200}
+                priority={priority}
+              />
               <span className="eyebrow">{category.label}</span>
             </motion.a>
           )

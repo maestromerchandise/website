@@ -172,7 +172,7 @@ export default function App() {
         {isLoading && <p className="notice">Loading catalogue</p>}
         {error && <p className="notice">The catalogue could not be loaded. Please refresh the page.</p>}
 
-        <CategoryStrip categories={categories} products={all} />
+        <CategoryStrip categories={categories} products={all} priority />
 
         {homepage?.clientLogos && homepage.clientLogos.length > 0 && (
           <Section heading={homepage.clientsSection?.heading ?? 'Our satisfied clients'} bleed>

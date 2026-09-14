@@ -47,7 +47,7 @@ export function Footer({ settings }: { settings: SiteSettings | null | undefined
               </a>
             ))}
         </div>
-        <img className="footer-logo" src="/logo.png" alt={siteName} width={2000} height={300} />
+        <img className="footer-logo" src="/logo-600.png" alt={siteName} width={600} height={90} />
         <p className="eyebrow copyright">
           {/* Read at render, so the year is right without anyone remembering it. */}
           <span>{`© ${new Date().getFullYear()} ${siteName}`}</span>

@@ -142,7 +142,7 @@ export function Header({ settings, search }: Props) {
           </nav>
 
           <a className="logo" href="/" aria-label={`${settings?.siteName ?? 'Maestro'}, back to top`}>
-            <img src="/logo.png" alt={settings?.siteName ?? 'Maestro'} width={2000} height={300} />
+            <img src="/logo-600.png" alt={settings?.siteName ?? 'Maestro'} width={600} height={90} />
           </a>
 
           <div className="header-tools">

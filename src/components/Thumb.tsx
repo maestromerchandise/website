@@ -8,6 +8,13 @@ type Props = {
   /** Rendered width in CSS pixels, used to pick the CDN transform size. */
   width: number
   className?: string
+  /**
+   * For an image on the first screen. It is fetched at once and ahead of the
+   * rest, because the page's largest paint waits on it; a lazy image in view is
+   * held back until layout and then queued at low priority. Everything below the
+   * fold stays lazy.
+   */
+  priority?: boolean
 }
 
 /**
@@ -18,7 +25,7 @@ type Props = {
  * the image in Studio replaces it with no cleanup, since nothing was ever
  * stored for the placeholder.
  */
-export function Thumb({ source, alt, width, className }: Props) {
+export function Thumb({ source, alt, width, className, priority = false }: Props) {
   const classes = className ? `thumb ${className}` : 'thumb'
 
   if (!source) {
@@ -45,7 +52,8 @@ export function Thumb({ source, alt, width, className }: Props) {
         src={imageUrl(source, width)}
         srcSet={imageSrcSet(source, width)}
         alt={alt}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : undefined}
         decoding="async"
       />
     </div>

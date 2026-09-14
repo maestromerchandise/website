@@ -22,12 +22,27 @@
     <meta property="og:image" content="https://www.maestro.com/logo.png" />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- Opened while the page parses, as on the home page: the content request
+         is an anonymous CORS fetch, the photographs plain image requests. -->
+    <link rel="preconnect" href="https://%VITE_SANITY_PROJECT_ID%.apicdn.sanity.io" crossorigin />
+    <link rel="preconnect" href="https://cdn.sanity.io" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Non-blocking, so a slow font stylesheet cannot hold back the scripts
+         that fetch the page's content. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>

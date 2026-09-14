@@ -22,12 +22,31 @@
     <meta property="og:image" content="https://www.maestro.com/logo.png" />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- The content request and the photographs come from Sanity. Opening both
+         connections while the page is still parsing saves the handshakes that
+         otherwise sit in front of the largest paint. The query is a CORS fetch,
+         so its connection is the anonymous one. -->
+    <link rel="preconnect" href="https://%VITE_SANITY_PROJECT_ID%.apicdn.sanity.io" crossorigin />
+    <link rel="preconnect" href="https://cdn.sanity.io" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Loaded without blocking. A render-blocking stylesheet also holds back
+         every script after it, so a slow answer from Google Fonts delayed the
+         content request, and the whole catalogue with it, by over a second. The
+         text shows in the fallback face until Montserrat arrives. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
     <script type="application/ld+json">
       {

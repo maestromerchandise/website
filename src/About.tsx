@@ -39,7 +39,8 @@ function AboutBlock({ heading, image, index, children }: BlockProps) {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="about-media">
-        <Thumb source={image} alt={heading} width={640} />
+        {/* The opening picture is on the first screen, and is the page's largest paint. */}
+        <Thumb source={image} alt={heading} width={640} priority={index === 0} />
       </div>
       <div className="about-body">
         {/* The page needs exactly one h1, and it belongs to the opening block. */}
