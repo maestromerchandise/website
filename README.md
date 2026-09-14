@@ -88,10 +88,10 @@ npm run build     # typecheck, build to dist/, then write robots.txt and sitemap
 npm run preview   # serve dist/ locally
 ```
 
-Set the live domain when building for production, or the sitemap and `robots.txt` point at the placeholder:
+Set the live domain when building for production, or the sitemap and `robots.txt` point at the placeholder. Either keep `SITE_URL` in `.env` or pass it inline:
 
 ```bash
-SITE_URL=https://www.yourdomain.com npm run build
+SITE_URL=https://maestromerchandise.com npm run build
 ```
 
 ## What Editors Can Change
@@ -106,7 +106,7 @@ Everything below is edited in Studio and takes effect without a deploy.
 | Products | Name, category, tagline, descriptions, features, specifications, colours with their own photographs, images, Ready-Made flag, order |
 | Product categories | Name, section id, card image, whether it appears in the row, order |
 
-A product colour can carry its own photograph. When it does, choosing that colour on the website swaps the picture to match, so the swatches show the product rather than only naming it. A colour with no photograph leaves the current image in place, which means the photographs can be added gradually.
+Product colours show on the website as swatches that list what the product is made in. They are for reference only and cannot be clicked; the gallery thumbnails under the main photograph are the one way to change the picture.
 
 SEO per page covers meta title, meta description, share title, share description, share image, canonical URL and a noindex switch. An empty field falls back to the global default in Site settings, then to what the HTML shipped.
 
@@ -114,23 +114,24 @@ SEO per page covers meta title, meta description, share title, share description
 
 Names only. See `.env.example`, and never commit a real value.
 
-| Variable | Required | Description |
-| :- | :- | :- |
-| `VITE_SANITY_PROJECT_ID` | Yes | Sanity project the content is read from |
-| `VITE_SANITY_DATASET` | Yes | Sanity dataset name, normally `production` |
-| `VITE_GA_MEASUREMENT_ID` | No | Google Analytics 4. Left empty, no analytics script loads at all |
-| `SANITY_WRITE_TOKEN` | No | Used by `npm run seed` only. No `VITE_` prefix, so it stays out of the bundle |
-| `SITE_URL` | No | Build-time only. The domain written into `robots.txt` and `sitemap.xml` |
+| Variable | Required | Where it is set | Description |
+| :- | :- | :- | :- |
+| `VITE_SANITY_PROJECT_ID` | Yes | Wherever the build runs | Sanity project the content is read from |
+| `VITE_SANITY_DATASET` | Yes | Wherever the build runs | Sanity dataset name, normally `production` |
+| `SITE_URL` | Yes, for production | Wherever the build runs | The domain written into `robots.txt` and `sitemap.xml`. Unset, both point at a placeholder domain |
+| `SANITY_WRITE_TOKEN` | No | Your own machine only | Used by `npm run seed` only. Never set it on a host. No `VITE_` prefix, so it stays out of the bundle |
 
-The `studio/` package reads `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` from its own `.env`.
+The Google Analytics measurement id and the enquiry e-mail are not variables. Both are edited in Studio under **Site settings**, so they change without a rebuild.
 
-Every `VITE_` value is compiled into the JavaScript bundle and is public. That is correct for all three: the Sanity dataset is public-read, and a GA4 measurement id identifies a property without authorising anything.
+The standalone `studio/` package (`npm run studio`, `npm run studio:deploy`) reads `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` from its own `.env`. The embedded Studio at `/studio` uses the `VITE_` pair and needs nothing extra.
+
+Every `VITE_` value is compiled into the JavaScript bundle when `npm run build` runs, not read when the page loads. Two consequences follow. The values are public, which is correct here because the Sanity dataset is public-read. And they must exist on the machine doing the build: setting them in a hosting panel after the files are uploaded changes nothing, and a build without them loads a blank page.
 
 ## Enquiries
 
 The Get in touch form opens the visitor's own mail application with the enquiry already written, addressed to the enquiry e-mail set in Site settings. There is no backend, no database and no transactional mail service, so nothing is stored and no credential ships in the bundle.
 
-The body leads with the visitor's WhatsApp number, because that is how the team replies. WhatsApp is the primary channel throughout: a floating button, a prefilled link in every product detail panel, and a CTA in the Custom Gift and Custom Box sections.
+The body leads with the visitor's WhatsApp number, because that is how the team replies. WhatsApp is the primary channel throughout: a floating button, and a CTA in the Custom Gift and Custom Box sections.
 
 ## Analytics
 
@@ -153,17 +154,33 @@ SITE_URL                 # the production domain, so the preview never advertise
 The first two are read at build time and written into the bundle, so a deploy without them throws on load and the page renders blank rather than reporting anything. Register the deployed address as a CORS origin too, or the catalogue cannot be read:
 
 ```bash
-npm run cors -- https://yoursite.netlify.app --credentials
-npm run cors -- https://yourdomain.com --credentials
+npm run cors -- https://maestromerchandise.netlify.app --credentials
+npm run cors -- https://maestromerchandise.com --credentials
 ```
 
 ## Deploying to Hostinger
 
-1. Build with the real domain: `SITE_URL=https://www.yourdomain.com npm run build`.
-2. Upload everything inside `dist/` to `public_html`, including the hidden `.htaccess`.
-3. The site must sit at the domain root, because both entry points reference `/assets/` by absolute path.
+Production. Three variables are needed, all at build time: `VITE_SANITY_PROJECT_ID`, `VITE_SANITY_DATASET` and `SITE_URL`. Nothing else goes on the host; `SANITY_WRITE_TOKEN` in particular stays on your own machine.
 
-`/about/` is a real directory containing a real `index.html`, so Apache serves it directly. A refresh cannot 404 and no rewrite rules are needed. The `.htaccess` only sets cache headers: fingerprinted assets are immutable for a year, HTML always revalidates.
+### Uploading a local build
+
+1. Put `VITE_SANITY_PROJECT_ID`, `VITE_SANITY_DATASET` and `SITE_URL=https://maestromerchandise.com` in `.env`.
+2. `npm run build`.
+3. Upload everything **inside** `dist/` to `public_html`, not the `dist` folder itself, and include the hidden `.htaccess`. In File Manager, turn on showing hidden files to check it arrived.
+4. The site must sit at the domain root, because every entry point references `/assets/` by absolute path.
+
+The variables are already compiled into the uploaded files, so adding them in hPanel does nothing. To change one, rebuild and upload again.
+
+### Building on Hostinger from Git
+
+When Hostinger builds the repository itself, set the same three variables in hPanel under the site's environment variables, with `npm run build` as the build command and `dist` as the output directory.
+
+### After deploying
+
+- `/about/` is a real directory containing a real `index.html`, so Apache serves it directly and a refresh cannot 404.
+- The `.htaccess` sets cache headers, so fingerprinted assets are immutable for a year and HTML always revalidates, and rewrites `/studio/*` to the Studio's `index.html`, so a refresh inside the Studio does not 404. A missing `.htaccess` shows up as exactly that 404.
+- `https://maestromerchandise.com` is already a registered CORS origin. If `www.maestromerchandise.com` also serves the site, register it too with `npm run cors -- https://www.maestromerchandise.com --credentials`, or redirect `www` to the bare domain in Hostinger.
+- Open the site and `/studio`. A blank page means the build ran without the `VITE_` pair; a CORS error in the console means the address being used is not registered.
 
 ### Domain and SSL
 
@@ -181,7 +198,7 @@ src/
   App.tsx           # home page
   About.tsx         # about page
   index.css         # design tokens and every style
-  components/       # header, marquee, grid, dialog, form, chat, WhatsApp, footer
+  components/       # header, marquee, grid, detail panel, form, chat, WhatsApp, footer
   lib/              # config, Sanity read, SEO, analytics, WhatsApp, enquiry, scroll
 studio/             # Sanity Studio, an npm workspace with its own dependencies
 scripts/            # content seed, and the robots/sitemap generator
