@@ -116,7 +116,9 @@ export default function About() {
       </a>
       <Header settings={settings} />
 
-      <main id="main" className="shell section">
+      {/* Busy until the content request returns, so the stylesheet can keep the
+          footer below the fold instead of on screen waiting to be pushed down. */}
+      <main id="main" className="shell section" aria-busy={isLoading}>
         {isLoading && <p className="notice">Loading</p>}
         {error && <p className="notice">This page could not be loaded. Please refresh.</p>}
 

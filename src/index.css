@@ -1166,6 +1166,22 @@ a {
 }
 
 /* States */
+
+/* While the content request is out, only what stands without it is laid out:
+   the tagline and the loading notice. The rest appears in one go when the
+   content lands. Laid out early, it sat on screen and was then pushed down by the
+   catalogue arriving above it, which is a layout shift the visitor sees.
+   The minimum height keeps the footer below the fold in the meantime, so the
+   footer is not left on screen to be pushed down instead. */
+main {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+main[aria-busy='true'] > :not(.tagline, .notice) {
+  display: none;
+}
+
 .notice {
   padding-block: 4rem;
   padding-inline: var(--gutter);

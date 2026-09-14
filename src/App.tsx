@@ -158,7 +158,10 @@ export default function App() {
         search={{ value: query, onChange: setQuery, suggestions, onPick: jumpToProduct }}
       />
 
-      <main id="main">
+      {/* Busy until the content request returns. The stylesheet holds back
+          everything that depends on it meanwhile, so the page does not lay out a
+          first version and then shove it down the screen when the catalogue lands. */}
+      <main id="main" aria-busy={isLoading}>
         <div className="tagline">
           <p className="eyebrow">{homepage?.heroTitle ?? 'Modern merchandising. Responsible impact'}</p>
           <p className="eyebrow tagline-sub">

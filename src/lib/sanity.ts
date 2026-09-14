@@ -36,6 +36,8 @@ export type Product = {
 export type ClientLogo = {
   name: string
   image?: string
+  /** Width over height of the uploaded logo, so its space is reserved before it loads. */
+  aspectRatio?: number
 }
 
 export type TitledEntry = {
@@ -170,7 +172,11 @@ const QUERY = `{
     customBoxSection,
     contactSection,
     contactLead,
-    clientLogos[]{name, "image": image.asset->url},
+    clientLogos[]{
+      name,
+      "image": image.asset->url,
+      "aspectRatio": image.asset->metadata.dimensions.aspectRatio
+    },
     faq[]{question, answer},
     "seo": seo{${SEO_FIELDS}}
   },

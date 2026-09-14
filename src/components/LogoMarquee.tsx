@@ -149,7 +149,16 @@ export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
               aria-hidden={copy > 0 ? true : undefined}
             >
               {logo.image ? (
-                <img src={imageUrl(logo.image, 240)} alt={logo.name} draggable={false} />
+                // Sized from the logo's own proportions, so the track is laid out
+                // at its final width before any logo has downloaded, and the logos
+                // do not slide sideways one by one as they arrive.
+                <img
+                  src={imageUrl(logo.image, 240)}
+                  alt={logo.name}
+                  width={logo.aspectRatio ? Math.round(72 * logo.aspectRatio) : undefined}
+                  height={logo.aspectRatio ? 72 : undefined}
+                  draggable={false}
+                />
               ) : (
                 logo.name
               )}
