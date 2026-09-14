@@ -364,7 +364,13 @@ a {
 
 .tagline {
   padding-block: clamp(1.5rem, 4vw, 2.5rem);
+  /* The tagline sits outside the shell, so it takes the shell's gutter itself.
+     Without it the tracked capitals ran into the edge of a phone screen. */
+  padding-inline: var(--gutter);
   text-align: center;
+  /* Evens the lines out, so a wrap leaves two halves rather than one word
+     stranded on a line of its own. */
+  text-wrap: balance;
 }
 
 .tagline-sub {
@@ -1162,6 +1168,7 @@ a {
 /* States */
 .notice {
   padding-block: 4rem;
+  padding-inline: var(--gutter);
   font-size: 0.8125rem;
   text-align: center;
   color: var(--text-faint);
