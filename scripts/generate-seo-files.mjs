@@ -4,8 +4,15 @@
  * Both need the live domain, which is not known until the site is deployed, so
  * it comes from SITE_URL rather than being committed. The site is two pages, so
  * the sitemap is written directly rather than crawled.
+ *
+ * SITE_URL is taken from the environment first, as a host that builds from Git
+ * sets it, and otherwise from .env. Vite reads .env only for its own bundle, not
+ * for this separate node process, so without loading it here a value kept in
+ * .env would be silently ignored.
  */
-import { writeFileSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
+
+if (!process.env.SITE_URL && existsSync('.env')) process.loadEnvFile('.env')
 
 const DEFAULT_SITE_URL = 'https://www.maestro.com'
 
