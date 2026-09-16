@@ -11,7 +11,9 @@ export const seo = defineType({
   name: 'seo',
   title: 'SEO',
   type: 'object',
-  options: { collapsible: true, collapsed: true },
+  // Always laid open. Folded away, the SEO fields read as a closed menu and were
+  // easy to miss; open, every field and its hint shows at a glance.
+  options: { collapsible: false },
   fields: [
     defineField({
       name: 'metaTitle',

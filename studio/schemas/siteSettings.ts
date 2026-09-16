@@ -10,9 +10,11 @@ export const siteSettings = defineType({
   name: 'siteSettings',
   title: 'Site Settings',
   type: 'document',
+  // No default group, so the document opens on All Fields with everything
+  // showing. The tabs only narrow the view when an editor wants them to.
   groups: [
     { name: 'brand', title: 'Logo And Favicon' },
-    { name: 'general', title: 'General', default: true },
+    { name: 'general', title: 'General' },
     { name: 'whatsapp', title: 'WhatsApp' },
     { name: 'contact', title: 'Contact' },
     { name: 'navigation', title: 'Navigation And Footer' },

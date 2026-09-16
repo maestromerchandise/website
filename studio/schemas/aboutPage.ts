@@ -5,6 +5,7 @@ const titledEntry = (name: string, title: string, description: string) =>
     name,
     title,
     type: 'array',
+    group: 'content',
     description,
     of: [
       defineArrayMember({
@@ -23,8 +24,10 @@ export const aboutPage = defineType({
   name: 'aboutPage',
   title: 'About Page',
   type: 'document',
+  // No default group, so the document opens on All Fields with everything
+  // showing. The tabs only narrow the view when an editor wants them to.
   groups: [
-    { name: 'content', title: 'Content', default: true },
+    { name: 'content', title: 'Content' },
     { name: 'seo', title: 'SEO' },
   ],
   fields: [
@@ -65,7 +68,13 @@ export const aboutPage = defineType({
       options: { hotspot: true },
       group: 'content',
     }),
-    defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seo',
+      group: 'seo',
+      description: 'Any field left empty here uses the SEO Defaults in Site Settings.',
+    }),
   ],
   preview: { prepare: () => ({ title: 'About Page' }) },
 })

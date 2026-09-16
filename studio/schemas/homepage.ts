@@ -6,7 +6,10 @@ const sectionCopy = (name: string, title: string, defaults: { heading: string; i
     name,
     title,
     type: 'object',
-    options: { collapsible: true, collapsed: true },
+    group: 'sections',
+    // Open, like every object in the Studio: a folded section read as a closed
+    // menu and its fields went unnoticed.
+    options: { collapsible: false },
     fields: [
       { name: 'heading', type: 'string', initialValue: defaults.heading },
       ...(defaults.intro
@@ -24,8 +27,10 @@ export const homepage = defineType({
   name: 'homepage',
   title: 'Home Page',
   type: 'document',
+  // No default group, so the document opens on All Fields with everything
+  // showing. The tabs only narrow the view when an editor wants them to.
   groups: [
-    { name: 'hero', title: 'Hero', default: true },
+    { name: 'hero', title: 'Hero' },
     { name: 'sections', title: 'Sections' },
     { name: 'clients', title: 'Clients' },
     { name: 'faq', title: 'Chat FAQ' },
@@ -45,17 +50,18 @@ export const homepage = defineType({
       initialValue: 'Premium corporate & sustainable branding solutions',
     }),
 
-    sectionCopy('clientsSection', 'Clients section', { heading: 'Our satisfied clients' }),
-    sectionCopy('readyMadeSection', 'Ready-Made section', { heading: 'Ready-Made' }),
-    sectionCopy('customGiftSection', 'Custom Gift section', { heading: 'Custom Gift', intro: CUSTOM_COPY }),
-    sectionCopy('customBoxSection', 'Custom Box section', { heading: 'Custom Box', intro: CUSTOM_COPY }),
-    sectionCopy('contactSection', 'Get in touch section', { heading: 'Get in touch' }),
+    sectionCopy('clientsSection', 'Clients Section', { heading: 'Our satisfied clients' }),
+    sectionCopy('readyMadeSection', 'Ready-Made Section', { heading: 'Ready-Made' }),
+    sectionCopy('customGiftSection', 'Custom Gift Section', { heading: 'Custom Gift', intro: CUSTOM_COPY }),
+    sectionCopy('customBoxSection', 'Custom Box Section', { heading: 'Custom Box', intro: CUSTOM_COPY }),
+    sectionCopy('contactSection', 'Get In Touch Section', { heading: 'Get in touch' }),
 
     defineField({
       name: 'contactLead',
       title: 'Get In Touch Heading Copy',
       type: 'object',
       group: 'sections',
+      options: { collapsible: false },
       fields: [
         { name: 'title', type: 'string', initialValue: 'We do more than create merchandise' },
         { name: 'subtitle', type: 'string', initialValue: 'End to end service' },
@@ -110,7 +116,13 @@ export const homepage = defineType({
       ],
     }),
 
-    defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seo',
+      group: 'seo',
+      description: 'Any field left empty here uses the SEO Defaults in Site Settings.',
+    }),
   ],
   preview: { prepare: () => ({ title: 'Home Page' }) },
 })

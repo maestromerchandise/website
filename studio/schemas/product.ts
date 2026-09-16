@@ -4,8 +4,10 @@ export const product = defineType({
   name: 'product',
   title: 'Product',
   type: 'document',
+  // No default group, so a product opens on All Fields, images included. The tabs
+  // only narrow the view when an editor wants them to.
   groups: [
-    { name: 'content', title: 'Content', default: true },
+    { name: 'content', title: 'Content' },
     { name: 'media', title: 'Images' },
     { name: 'placement', title: 'Placement' },
   ],
