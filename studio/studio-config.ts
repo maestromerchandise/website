@@ -103,6 +103,13 @@ export function createStudioConfig({
     dataset,
     ...(basePath ? { basePath } : {}),
     theme: maestroTheme,
+    // No scheduling views. Editors publish straight from the document, so the
+    // Releases tool, where scheduled drafts live, is switched off. It stays in the
+    // navbar while either releases or scheduled drafts is on, so both go, along
+    // with the older Scheduled Publishing tool so no schedule view returns through it.
+    releases: { enabled: false },
+    scheduledDrafts: { enabled: false },
+    scheduledPublishing: { enabled: false },
     schema: {
       types: [product, productCategory, homepage, aboutPage, siteSettings, seo],
       // A singleton is one fixed document, so it is never offered in the
