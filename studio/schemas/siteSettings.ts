@@ -11,6 +11,7 @@ export const siteSettings = defineType({
   title: 'Site Settings',
   type: 'document',
   groups: [
+    { name: 'brand', title: 'Logo And Favicon' },
     { name: 'general', title: 'General', default: true },
     { name: 'whatsapp', title: 'WhatsApp' },
     { name: 'contact', title: 'Contact' },
@@ -19,6 +20,23 @@ export const siteSettings = defineType({
     { name: 'analytics', title: 'Analytics' },
   ],
   fields: [
+    defineField({
+      name: 'logo',
+      title: 'Logo',
+      type: 'image',
+      group: 'brand',
+      description:
+        'Shown in the header and the footer. A PNG with a transparent background or an SVG, cropped close to the logo, looks sharpest. Left empty, the built-in Maestro wordmark is used.',
+    }),
+    defineField({
+      name: 'favicon',
+      title: 'Favicon',
+      type: 'image',
+      group: 'brand',
+      description:
+        'The small icon in the browser tab, and on a phone home screen when the site is saved there. Use a square PNG or SVG of at least 512 x 512. Left empty, the built-in icon is used.',
+    }),
+
     defineField({
       name: 'siteUrl',
       title: 'Production Site Address',

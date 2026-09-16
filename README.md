@@ -100,7 +100,7 @@ Everything below is edited in Studio and takes effect without a deploy.
 
 | Document | Controls |
 | :- | :- |
-| Site settings | Site address, WhatsApp number and message templates, enquiry e-mail, contact details, header navigation, footer line, SEO defaults |
+| Site settings | Logo and favicon, site address, WhatsApp number and message templates, enquiry e-mail, contact details, header navigation, footer line, SEO defaults |
 | Home page | Hero lines, every section heading and intro, featured product order, client logos, chat FAQ, page SEO |
 | About page | Introduction, image, Why Choose Us, Our Service, page SEO |
 | Products | Name, category, tagline, descriptions, features, specifications, colours with their own photographs, images, Ready-Made flag, order |

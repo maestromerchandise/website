@@ -40,7 +40,7 @@ function setMeta(selector: string, attribute: 'name' | 'property', key: string, 
   tag.content = content
 }
 
-function setLink(rel: string, href: string): void {
+function setLink(rel: string, href: string): HTMLLinkElement {
   let tag = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`)
   if (!tag) {
     tag = document.createElement('link')
@@ -48,6 +48,20 @@ function setLink(rel: string, href: string): void {
     document.head.appendChild(tag)
   }
   tag.href = href
+  return tag
+}
+
+/**
+ * Point the tab icon and the home screen icon at the favicon uploaded in Studio.
+ *
+ * Asked for as a PNG at a fixed size whatever was uploaded, because not every
+ * browser shows a WebP or AVIF favicon. A crawler reads the icon from the HTML
+ * without running this, so search results keep showing the built-in favicon.svg.
+ */
+function applyFavicon(source: string): void {
+  const png = (size: number) => `${source}?w=${size}&h=${size}&fit=max&fm=png`
+  setLink('icon', png(64)).type = 'image/png'
+  setLink('apple-touch-icon', png(180))
 }
 
 /** Join the configured site address with this page's path. */
@@ -86,6 +100,8 @@ export function applySeo(
     setLink('canonical', canonical)
     setMeta('meta[property="og:url"]', 'property', 'og:url', canonical)
   }
+
+  if (settings?.favicon) applyFavicon(settings.favicon)
 
   // Only ever added, never removed: a page marked noindex in the CMS must be
   // able to turn indexing off, but an absent flag means "leave the default".

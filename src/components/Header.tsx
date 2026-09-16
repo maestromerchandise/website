@@ -3,6 +3,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent } from 'react'
 import { EVENTS, track } from '../lib/analytics'
 import type { Product, SiteSettings } from '../lib/sanity'
 import { scrollToSection } from '../lib/scroll'
+import { Logo } from './Logo'
 
 type Props = {
   settings: SiteSettings | null | undefined
@@ -142,7 +143,7 @@ export function Header({ settings, search }: Props) {
           </nav>
 
           <a className="logo" href="/" aria-label={`${settings?.siteName ?? 'Maestro'}, back to top`}>
-            <img src="/logo-600.png" alt={settings?.siteName ?? 'Maestro'} width={600} height={90} />
+            <Logo settings={settings} />
           </a>
 
           <div className="header-tools">

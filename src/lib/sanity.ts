@@ -77,6 +77,12 @@ export type Contact = {
 export type SiteSettings = {
   siteUrl?: string
   siteName?: string
+  /** Uploaded in Studio. While empty, the built-in wordmark is shown. */
+  logo?: string
+  /** Width over height of the logo, so its space is reserved before it loads. */
+  logoAspectRatio?: number
+  /** Uploaded in Studio. While empty, the built-in favicon.svg stays in place. */
+  favicon?: string
   mastheadText?: string
   whatsappNumber?: string
   whatsappDefaultMessage?: string
@@ -151,6 +157,9 @@ const QUERY = `{
   "settings": *[_type == "siteSettings"][0]{
     siteUrl,
     siteName,
+    "logo": logo.asset->url,
+    "logoAspectRatio": logo.asset->metadata.dimensions.aspectRatio,
+    "favicon": favicon.asset->url,
     mastheadText,
     whatsappNumber,
     whatsappDefaultMessage,

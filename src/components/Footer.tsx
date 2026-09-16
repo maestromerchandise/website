@@ -1,6 +1,7 @@
 import { EVENTS, track } from '../lib/analytics'
 import type { SiteSettings } from '../lib/sanity'
 import { whatsappLink } from '../lib/whatsapp'
+import { Logo } from './Logo'
 
 /** Icon paths are inline so the footer costs no extra request. */
 const ICONS = {
@@ -47,7 +48,7 @@ export function Footer({ settings }: { settings: SiteSettings | null | undefined
               </a>
             ))}
         </div>
-        <img className="footer-logo" src="/logo-600.png" alt={siteName} width={600} height={90} />
+        <Logo settings={settings} className="footer-logo" />
         <p className="eyebrow copyright">
           {/* Read at render, so the year is right without anyone remembering it. */}
           <span>{`© ${new Date().getFullYear()} ${siteName}`}</span>
