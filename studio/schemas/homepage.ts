@@ -50,7 +50,7 @@ export const homepage = defineType({
       initialValue: 'Premium corporate & sustainable branding solutions',
     }),
 
-    sectionCopy('clientsSection', 'Clients Section', { heading: 'Our satisfied clients' }),
+    sectionCopy('clientsSection', 'Clients Section', { heading: 'Selected Brand Projects' }),
     sectionCopy('readyMadeSection', 'Ready-Made Section', { heading: 'Ready-Made' }),
     sectionCopy('customGiftSection', 'Custom Gift Section', { heading: 'Custom Gift', intro: CUSTOM_COPY }),
     sectionCopy('customBoxSection', 'Custom Box Section', { heading: 'Custom Box', intro: CUSTOM_COPY }),

@@ -175,7 +175,7 @@ export default function App() {
         <CategoryStrip categories={categories} products={all} priority />
 
         {homepage?.clientLogos && homepage.clientLogos.length > 0 && (
-          <Section heading={homepage.clientsSection?.heading ?? 'Our satisfied clients'} bleed>
+          <Section heading={homepage.clientsSection?.heading ?? 'Selected Brand Projects'} bleed>
             <LogoMarquee logos={homepage.clientLogos} />
           </Section>
         )}

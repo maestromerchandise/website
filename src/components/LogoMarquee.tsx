@@ -132,7 +132,7 @@ export function LogoMarquee({ logos }: { logos: ClientLogo[] }) {
       ref={viewportRef}
       className="marquee"
       role="group"
-      aria-label="Selected clients"
+      aria-label="Selected brand projects"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
