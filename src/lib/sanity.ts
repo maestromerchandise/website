@@ -81,7 +81,7 @@ export type SiteSettings = {
   logo?: string
   /** Width over height of the logo, so its space is reserved before it loads. */
   logoAspectRatio?: number
-  /** Uploaded in Studio. While empty, the built-in favicon.svg stays in place. */
+  /** Uploaded in Studio. While empty, the icon files the HTML names stay in place. */
   favicon?: string
   mastheadText?: string
   whatsappNumber?: string

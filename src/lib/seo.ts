@@ -54,13 +54,32 @@ function setLink(rel: string, href: string): HTMLLinkElement {
 /**
  * Point the tab icon and the home screen icon at the favicon uploaded in Studio.
  *
+ * The icon link from the HTML is replaced, not edited. It declares an SVG, and
+ * pointing that same element at a PNG leaves a browser holding a link whose type
+ * contradicts its file, which it is free to ignore. A new link that names its own
+ * type from the start is read as a new icon by every browser that honours
+ * favicon changes at all.
+ *
  * Asked for as a PNG at a fixed size whatever was uploaded, because not every
- * browser shows a WebP or AVIF favicon. A crawler reads the icon from the HTML
- * without running this, so search results keep showing the built-in favicon.svg.
+ * browser shows a WebP or AVIF favicon. Safari, an iPhone and search engines
+ * ignore this swap and read the icon files the HTML names, which the build writes
+ * from the same Studio favicon in scripts/sync-favicon.mjs.
  */
 function applyFavicon(source: string): void {
   const png = (size: number) => `${source}?w=${size}&h=${size}&fit=max&fm=png`
-  setLink('icon', png(64)).type = 'image/png'
+  const href = png(64)
+
+  const current = document.head.querySelectorAll<HTMLLinkElement>('link[rel~="icon"]')
+  if (current.length !== 1 || current[0].href !== href) {
+    current.forEach((link) => link.remove())
+    const icon = document.createElement('link')
+    icon.rel = 'icon'
+    icon.type = 'image/png'
+    icon.setAttribute('sizes', '64x64')
+    icon.href = href
+    document.head.appendChild(icon)
+  }
+
   setLink('apple-touch-icon', png(180))
 }
 

@@ -106,6 +106,8 @@ Everything below is edited in Studio and takes effect without a deploy.
 | Products | Name, category, tagline, descriptions, features, specifications, colours with their own photographs, images, Ready-Made flag, order |
 | Product categories | Name, section id, card image, whether it appears in the row, order |
 
+The favicon is the one exception to taking effect without a deploy. Chrome, Edge and Firefox switch to a new favicon as soon as the page loads, but Safari, an iPhone, apps that open links in their own browser and search engines read only the icon files named in the HTML. `npm run build` copies the Studio favicon into those files, so they show a new favicon from the next deploy.
+
 Product colours show on the website as swatches that list what the product is made in. They are for reference only and cannot be clicked; the gallery thumbnails under the main photograph are the one way to change the picture.
 
 SEO per page covers meta title, meta description, share title, share description, share image, canonical URL and a noindex switch. An empty field falls back to the global default in Site settings, then to what the HTML shipped.
