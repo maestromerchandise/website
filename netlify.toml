@@ -13,8 +13,8 @@
   publish = "dist"
 
 # The Studio is a single-page app: it puts the document being edited in the path,
-# so /studio/structure/... must be served studio/index.html rather than 404. The
-# site's own pages are real files and are matched before this rule applies.
+# so /studio/* must be served studio/index.html rather than 404. The site's own
+# pages are real files and are matched before this rule applies.
 # public/.htaccess does the same for Apache and is ignored here.
 [[redirects]]
   from = "/studio/*"
@@ -33,10 +33,22 @@
   [headers.values]
     Cache-Control = "no-cache"
 
+# Security headers, and the preview's noindex.
+#
+# The content security policy is a meta tag in the site's own pages rather than a
+# header here, so /studio, which is Sanity's application and talks to a long list
+# of its hosts, is not caught by a policy written for the catalogue.
+# frame-ancestors cannot be set from a meta tag, so the framing rule lives here
+# and covers every page.
+#
 # The preview is a copy of the production site on a different address, so search
-# engines have to be told to leave it alone. Without this it competes with the
-# real domain for the same content. Hostinger serves the indexable copy.
+# engines have to be told to leave it alone. Hostinger serves the indexable copy.
 [[headers]]
   for = "/*"
   [headers.values]
     X-Robots-Tag = "noindex"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+    Strict-Transport-Security = "max-age=31536000"

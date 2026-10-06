@@ -143,6 +143,18 @@ Tracked: page views, product detail opens, category clicks, Ready-Made opens, Cu
 
 **No personal data is ever sent.** Events carry a product title, a category name or a section id, all of which are already public page content. No name, e-mail address, phone number or message body reaches Analytics.
 
+## Security
+
+The site is static files plus one public read from Sanity: no server of its own, no session, no credential in the bundle. What is worth protecting is therefore what an editor can put on a page, and what a browser is allowed to load.
+
+- Every address that arrives from the CMS is scheme checked before it reaches an `href` or a `src`, in `src/lib/url.ts`. A link saved as `javascript:...` is dropped rather than rendered, on social links, navigation, images, the canonical link and the share image.
+- The Google Analytics measurement id is matched against the GA4 shape before it is put in a script URL.
+- `index.html` and `about/index.html` carry a content security policy as a meta tag. Scripts load from the site itself and Google Tag Manager, images from the site and Sanity's CDN, and nothing may be framed or embedded. `style-src` allows inline styles, because React writes element styles and Motion animates them; `script-src` does not, which is the half that matters.
+- `/studio` carries no policy on purpose. It is Sanity's own application and talks to a long list of their hosts, so constraining it would break the editing tool without protecting the public site.
+- `public/.htaccess` and `netlify.toml` add `X-Content-Type-Options`, `X-Frame-Options: DENY`, a referrer policy, a permissions policy, HSTS on HTTPS, and no directory listing.
+- The dataset is public to read by design, because the catalogue is public content. Writing requires a Sanity login, which is where access control lives.
+- `npm audit` reports 20 advisories, all inside the Sanity tooling tree rather than the catalogue bundle. They clear with the Studio's next major version, which is a migration of its own and is not done here.
+
 ## Preview on Netlify
 
 Netlify hosts the preview; production is Hostinger, below. `netlify.toml` carries the build command, the publish directory, the Studio rewrite and a `noindex` header, so the preview never competes with the live domain in search and a fresh clone deploys without touching the dashboard. Two things still have to be set there by hand, under **Site configuration > Environment variables**:

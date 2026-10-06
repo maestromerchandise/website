@@ -6,6 +6,19 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- What this page may load, named here rather than in a server header so it
+         travels with the page on either host and leaves /studio, which is Sanity's
+         own application, out of a policy written for the catalogue. Scripts come
+         from this site and Google Tag Manager; nothing else may run. style-src
+         allows inline because React writes element styles and Motion animates
+         them; script-src never does. frame-ancestors is not available in a meta
+         tag and is set as X-Frame-Options by the host configuration. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://*.sanity.io https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; img-src 'self' data: https://cdn.sanity.io https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com"
+    />
+
     <title>Maestro | Premium Corporate and Sustainable Branding Solutions</title>
     <meta
       name="description"
@@ -36,12 +49,14 @@
     <!-- Loaded without blocking. A render-blocking stylesheet also holds back
          every script after it, so a slow answer from Google Fonts delayed the
          content request, and the whole catalogue with it, by over a second. The
-         text shows in the fallback face until Montserrat arrives. -->
+         print media is what keeps it out of the way; the entry script switches it
+         to all, which an onload attribute here cannot do under the policy above.
+         The text shows in the fallback face until then. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
       rel="stylesheet"
       media="print"
-      onload="this.media = 'all'"
+      data-font
     />
     <noscript>
       <link

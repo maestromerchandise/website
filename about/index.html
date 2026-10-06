@@ -6,6 +6,14 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- The same policy the home page carries. See index.html for why it is a
+         meta tag rather than a server header. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://*.sanity.io https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; img-src 'self' data: https://cdn.sanity.io https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com"
+    />
+
     <title>About Us | Maestro</title>
     <meta
       name="description"
@@ -32,12 +40,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Non-blocking, so a slow font stylesheet cannot hold back the scripts
-         that fetch the page's content. -->
+         that fetch the page's content. The entry script switches the media to
+         all, as on the home page. -->
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
       rel="stylesheet"
       media="print"
-      onload="this.media = 'all'"
+      data-font
     />
     <noscript>
       <link
