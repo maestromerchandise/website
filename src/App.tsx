@@ -11,7 +11,7 @@ import { Section } from './components/Section'
 import { WhatsAppButton } from './components/WhatsAppButton'
 import { EVENTS, initAnalytics, track } from './lib/analytics'
 import { FALLBACK_CATEGORIES, hasOwnSection } from './lib/categories'
-import type { Product } from './lib/sanity'
+import type { Product, SectionCopy } from './lib/sanity'
 import { prefersReducedMotion, scrollToSection } from './lib/scroll'
 import { applySeo } from './lib/seo'
 import { useSiteContent } from './lib/useSiteContent'
@@ -20,6 +20,16 @@ import { whatsappLink } from './lib/whatsapp'
 function matches(product: Product, query: string): boolean {
   const haystack = [product.title, product.tagline, product.description].join(' ').toLowerCase()
   return haystack.includes(query.toLowerCase())
+}
+
+/**
+ * Whether a section appears at all.
+ *
+ * Off is a deliberate choice in Studio; anything else, including a section an
+ * editor has never opened, leaves it showing as it always has.
+ */
+function shows(section: SectionCopy | undefined): boolean {
+  return section?.show !== false
 }
 
 export default function App() {
@@ -174,7 +184,7 @@ export default function App() {
 
         <CategoryStrip categories={categories} products={all} priority />
 
-        {homepage?.clientLogos && homepage.clientLogos.length > 0 && (
+        {shows(homepage?.clientsSection) && homepage?.clientLogos && homepage.clientLogos.length > 0 && (
           <Section heading={homepage.clientsSection?.heading ?? 'Selected Brand Projects'} bleed>
             <LogoMarquee logos={homepage.clientLogos} />
           </Section>
@@ -199,7 +209,7 @@ export default function App() {
           })}
         </div>
 
-        {readyMade.length > 0 && (
+        {shows(homepage?.readyMadeSection) && readyMade.length > 0 && (
           <Section id="ready-made" heading={homepage?.readyMadeSection?.heading ?? 'Ready-Made'}>
             <ProductGrid
               products={readyMade}
@@ -210,42 +220,48 @@ export default function App() {
           </Section>
         )}
 
-        <Section
-          id="custom-gift"
-          heading={homepage?.customGiftSection?.heading ?? 'Custom Gift'}
-          intro={homepage?.customGiftSection?.intro}
-          bleed
-        >
-          <CategoryStrip categories={categories} products={all} hideEmpty />
-          <div className="shell">{customCta(EVENTS.customGiftCta)}</div>
-        </Section>
+        {shows(homepage?.customGiftSection) && (
+          <Section
+            id="custom-gift"
+            heading={homepage?.customGiftSection?.heading ?? 'Custom Gift'}
+            intro={homepage?.customGiftSection?.intro}
+            bleed
+          >
+            <CategoryStrip categories={categories} products={all} hideEmpty />
+            <div className="shell">{customCta(EVENTS.customGiftCta)}</div>
+          </Section>
+        )}
 
-        <Section
-          id="custom-box"
-          heading={homepage?.customBoxSection?.heading ?? 'Custom Box'}
-          intro={homepage?.customBoxSection?.intro}
-        >
-          <ProductGrid
-            products={boxes}
-            open={openByGrid['custom-box'] ?? []}
-            onOpen={(product) => openProduct(product, 'custom_box', 'custom-box')}
-            onClose={(product) => closeProduct('custom-box', product)}
-          />
-          {customCta(EVENTS.customBoxCta)}
-        </Section>
+        {shows(homepage?.customBoxSection) && (
+          <Section
+            id="custom-box"
+            heading={homepage?.customBoxSection?.heading ?? 'Custom Box'}
+            intro={homepage?.customBoxSection?.intro}
+          >
+            <ProductGrid
+              products={boxes}
+              open={openByGrid['custom-box'] ?? []}
+              onOpen={(product) => openProduct(product, 'custom_box', 'custom-box')}
+              onClose={(product) => closeProduct('custom-box', product)}
+            />
+            {customCta(EVENTS.customBoxCta)}
+          </Section>
+        )}
 
-        <Section id="contact" heading={homepage?.contactSection?.heading ?? 'Get in touch'}>
-          <div className="contact">
-            <div className="contact-lead">
-              <p className="display">
-                {homepage?.contactLead?.title ?? 'We do more than create merchandise'}
-              </p>
-              <p className="eyebrow">{homepage?.contactLead?.subtitle ?? 'End to end service'}</p>
+        {shows(homepage?.contactSection) && (
+          <Section id="contact" heading={homepage?.contactSection?.heading ?? 'Get in touch'}>
+            <div className="contact">
+              <div className="contact-lead">
+                <p className="display">
+                  {homepage?.contactLead?.title ?? 'We do more than create merchandise'}
+                </p>
+                <p className="eyebrow">{homepage?.contactLead?.subtitle ?? 'End to end service'}</p>
+              </div>
+
+              <ContactForm settings={settings} />
             </div>
-
-            <ContactForm settings={settings} />
-          </div>
-        </Section>
+          </Section>
+        )}
       </main>
 
       <Footer settings={settings} />

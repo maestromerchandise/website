@@ -1,6 +1,9 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
 
-/** The editable heading and copy for one section of the home page. */
+/**
+ * The editable heading and copy for one section of the home page, and the switch
+ * that takes the whole section off the site.
+ */
 const sectionCopy = (name: string, title: string, defaults: { heading: string; intro?: string }) =>
   defineField({
     name,
@@ -11,6 +14,13 @@ const sectionCopy = (name: string, title: string, defaults: { heading: string; i
     // menu and its fields went unnoticed.
     options: { collapsible: false },
     fields: [
+      {
+        name: 'show',
+        title: 'Show This Section',
+        type: 'boolean',
+        description: 'Turn off to hide the whole section from the website. Nothing is deleted.',
+        initialValue: true,
+      },
       { name: 'heading', type: 'string', initialValue: defaults.heading },
       ...(defaults.intro
         ? [{ name: 'intro', title: 'Intro Copy', type: 'text' as const, rows: 3, initialValue: defaults.intro }]

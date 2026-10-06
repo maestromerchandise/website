@@ -61,6 +61,8 @@ export type Seo = {
 }
 
 export type SectionCopy = {
+  /** Set false in Studio to take the whole section off the site. */
+  show?: boolean
   heading?: string
   intro?: string
 }
