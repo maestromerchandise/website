@@ -17,6 +17,16 @@
 /** Set by initAnalytics once the settings arrive; until then nothing is sent. */
 let measurementId: string | undefined
 
+/**
+ * What a GA4 measurement id looks like, checked before the id is put in a URL.
+ *
+ * The id comes from the CMS, so it is data from outside this codebase. The shape
+ * is fixed and public, which makes an allow-list cheap: anything else is a
+ * mistake or an attempt to steer the request, and both are better dropped than
+ * loaded.
+ */
+const MEASUREMENT_ID = /^G-[A-Z0-9]{4,20}$/i
+
 type GtagArguments =
   | ['js', Date]
   | ['config', string, Record<string, unknown>?]
@@ -45,7 +55,8 @@ function isEnabled(): boolean {
  * with no measurement id makes no third-party request at all.
  */
 export function initAnalytics(id: string | undefined, pageTitle: string): void {
-  if (!id || typeof window === 'undefined' || document.getElementById('ga4')) return
+  if (!id || !MEASUREMENT_ID.test(id)) return
+  if (typeof window === 'undefined' || document.getElementById('ga4')) return
   measurementId = id
 
   window.dataLayer = window.dataLayer ?? []

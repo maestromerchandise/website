@@ -1,5 +1,6 @@
 import { EVENTS, track } from '../lib/analytics'
 import type { SiteSettings } from '../lib/sanity'
+import { externalUrl } from '../lib/url'
 import { whatsappLink } from '../lib/whatsapp'
 import { Logo } from './Logo'
 
@@ -18,11 +19,13 @@ export function Footer({ settings }: { settings: SiteSettings | null | undefined
   const contact = settings?.contact
   const siteName = settings?.siteName ?? 'Maestro'
 
+  // Every address here is typed into Studio, so each is scheme checked before it
+  // becomes an href. One that is not http or https is dropped with its icon.
   const links = [
-    { key: 'instagram', label: 'Instagram', href: contact?.instagram },
-    { key: 'tiktok', label: 'TikTok', href: contact?.tiktok },
+    { key: 'instagram', label: 'Instagram', href: externalUrl(contact?.instagram) },
+    { key: 'tiktok', label: 'TikTok', href: externalUrl(contact?.tiktok) },
     { key: 'whatsapp', label: 'WhatsApp', href: whatsappLink(settings) },
-    { key: 'maps', label: 'Find us', href: contact?.mapsUrl },
+    { key: 'maps', label: 'Find us', href: externalUrl(contact?.mapsUrl) },
   ] as const
 
   return (

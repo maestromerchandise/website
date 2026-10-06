@@ -1,4 +1,5 @@
 import type { Seo, SiteSettings } from './sanity'
+import { externalUrl } from './url.ts'
 
 /**
  * Apply CMS metadata to the document head.
@@ -56,7 +57,7 @@ function setLink(rel: string, href: string): void {
 
 /** Join the configured site address with this page's path. */
 function canonicalFor(settings: SiteSettings | null | undefined, path: string): string | undefined {
-  const base = settings?.siteUrl?.replace(/\/+$/, '')
+  const base = externalUrl(settings?.siteUrl)?.replace(/\/+$/, '')
   if (!base) return undefined
   return `${base}${path}`
 }
@@ -82,10 +83,12 @@ export function applySeo(
     setMeta('meta[property="og:description"]', 'property', 'og:description', ogDescription)
   }
 
-  const ogImage = resolve(page, defaults, 'ogImage')
+  // Both of these end up in an attribute a browser or a crawler will follow, so
+  // the address from the CMS is scheme checked before it is written.
+  const ogImage = externalUrl(resolve(page, defaults, 'ogImage'))
   if (ogImage) setMeta('meta[property="og:image"]', 'property', 'og:image', ogImage)
 
-  const canonical = resolve(page, defaults, 'canonicalUrl') ?? canonicalFor(settings, path)
+  const canonical = externalUrl(resolve(page, defaults, 'canonicalUrl')) ?? canonicalFor(settings, path)
   if (canonical) {
     setLink('canonical', canonical)
     setMeta('meta[property="og:url"]', 'property', 'og:url', canonical)

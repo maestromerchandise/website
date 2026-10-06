@@ -23,12 +23,14 @@ type Props = {
  * The catalogue is being built before the photography exists, so a missing
  * asset renders as a deliberate tinted tile rather than a broken image. Setting
  * the image in Studio replaces it with no cleanup, since nothing was ever
- * stored for the placeholder.
+ * stored for the placeholder. An address the URL helper rejects lands on the
+ * same tile, so a bad one is never put in an `src`.
  */
 export function Thumb({ source, alt, width, className, priority = false }: Props) {
   const classes = className ? `thumb ${className}` : 'thumb'
+  const src = imageUrl(source, width)
 
-  if (!source) {
+  if (!src) {
     return (
       <div
         className={`${classes} thumb-placeholder`}
@@ -49,7 +51,7 @@ export function Thumb({ source, alt, width, className, priority = false }: Props
   return (
     <div className={classes}>
       <img
-        src={imageUrl(source, width)}
+        src={src}
         srcSet={imageSrcSet(source, width)}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}

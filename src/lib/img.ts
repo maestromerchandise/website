@@ -1,3 +1,5 @@
+import { externalUrl } from './url.ts'
+
 /**
  * Sanity image URL helpers.
  *
@@ -5,6 +7,10 @@
  * every plan, so originals are uploaded untouched and shrunk at delivery. An
  * 800px WebP of a product shot on white lands around 30-60KB, which is what
  * keeps the page light without a second CDN in front.
+ *
+ * Every address here arrives from the CMS, so it is scheme checked before it
+ * reaches an `src`. An unusable one returns empty, and the caller shows its
+ * placeholder rather than a link a browser would follow.
  */
 
 /** Quality 75 is the point where WebP artefacts stop being visible on product photography. */
@@ -17,18 +23,19 @@ const QUALITY = 75
  * which beats pinning `fm=webp` for browsers that support something better.
  */
 export function imageUrl(source: string | undefined, width: number): string {
-  if (!source) return ''
+  const safe = externalUrl(source)
+  if (!safe) return ''
   const params = new URLSearchParams({
     w: String(Math.round(width)),
     q: String(QUALITY),
     fit: 'max',
     auto: 'format',
   })
-  return `${source}?${params}`
+  return `${safe}?${params}`
 }
 
 /** Matching 1x and 2x candidates, so the image stays sharp on a retina screen. */
 export function imageSrcSet(source: string | undefined, width: number): string | undefined {
-  if (!source) return undefined
+  if (!imageUrl(source, width)) return undefined
   return `${imageUrl(source, width)} 1x, ${imageUrl(source, width * 2)} 2x`
 }

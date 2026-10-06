@@ -3,6 +3,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent } from 'react'
 import { EVENTS, track } from '../lib/analytics'
 import type { Product, SiteSettings } from '../lib/sanity'
 import { scrollToSection } from '../lib/scroll'
+import { siteHref } from '../lib/url'
 import { Logo } from './Logo'
 
 type Props = {
@@ -92,16 +93,22 @@ export function Header({ settings, search }: Props) {
     }
   }
 
-  const links = nav.map((item) => (
-    <a
-      key={item.href}
-      className="eyebrow nav-link"
-      href={item.href}
-      onClick={(event) => handleNavClick(event, item.href)}
-    >
-      {item.label}
-    </a>
-  ))
+  // A navigation link is typed into Studio, so it has to be a place on this site
+  // before it becomes an href. Anything else, a scheme or another host, is left out.
+  const links = nav.flatMap((item) => {
+    const href = siteHref(item.href)
+    if (!href) return []
+    return [
+      <a
+        key={href}
+        className="eyebrow nav-link"
+        href={href}
+        onClick={(event) => handleNavClick(event, href)}
+      >
+        {item.label}
+      </a>,
+    ]
+  })
 
   return (
     <>
