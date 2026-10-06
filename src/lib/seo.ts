@@ -7,6 +7,10 @@ import type { Seo, SiteSettings } from './sanity'
  * does not run JavaScript still sees a titled, described page. This layer
  * overwrites those with the CMS values once content arrives, which is what lets
  * an administrator change a title without a deploy.
+ *
+ * The tab icon is not set here. It is written into the icon files the HTML names
+ * at build time by scripts/sync-favicon.mjs, which is the only form every browser
+ * reads.
  */
 
 /** A usable value, or undefined for anything blank. */
@@ -40,7 +44,7 @@ function setMeta(selector: string, attribute: 'name' | 'property', key: string, 
   tag.content = content
 }
 
-function setLink(rel: string, href: string): HTMLLinkElement {
+function setLink(rel: string, href: string): void {
   let tag = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`)
   if (!tag) {
     tag = document.createElement('link')
@@ -48,39 +52,6 @@ function setLink(rel: string, href: string): HTMLLinkElement {
     document.head.appendChild(tag)
   }
   tag.href = href
-  return tag
-}
-
-/**
- * Point the tab icon and the home screen icon at the favicon uploaded in Studio.
- *
- * The icon link from the HTML is replaced, not edited. It declares an SVG, and
- * pointing that same element at a PNG leaves a browser holding a link whose type
- * contradicts its file, which it is free to ignore. A new link that names its own
- * type from the start is read as a new icon by every browser that honours
- * favicon changes at all.
- *
- * Asked for as a PNG at a fixed size whatever was uploaded, because not every
- * browser shows a WebP or AVIF favicon. Safari, an iPhone and search engines
- * ignore this swap and read the icon files the HTML names, which the build writes
- * from the same Studio favicon in scripts/sync-favicon.mjs.
- */
-function applyFavicon(source: string): void {
-  const png = (size: number) => `${source}?w=${size}&h=${size}&fit=max&fm=png`
-  const href = png(64)
-
-  const current = document.head.querySelectorAll<HTMLLinkElement>('link[rel~="icon"]')
-  if (current.length !== 1 || current[0].href !== href) {
-    current.forEach((link) => link.remove())
-    const icon = document.createElement('link')
-    icon.rel = 'icon'
-    icon.type = 'image/png'
-    icon.setAttribute('sizes', '64x64')
-    icon.href = href
-    document.head.appendChild(icon)
-  }
-
-  setLink('apple-touch-icon', png(180))
 }
 
 /** Join the configured site address with this page's path. */
@@ -119,8 +90,6 @@ export function applySeo(
     setLink('canonical', canonical)
     setMeta('meta[property="og:url"]', 'property', 'og:url', canonical)
   }
-
-  if (settings?.favicon) applyFavicon(settings.favicon)
 
   // Only ever added, never removed: a page marked noindex in the CMS must be
   // able to turn indexing off, but an absent flag means "leave the default".

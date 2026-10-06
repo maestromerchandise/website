@@ -4,25 +4,32 @@
  *   node scripts/sync-favicon.mjs          into dist/, run by `npm run build`
  *   node scripts/sync-favicon.mjs public   refresh the defaults committed in public/
  *
- * The site also swaps the tab icon to the Studio favicon from JavaScript, but
- * only some browsers follow that. Safari, an iPhone, apps that open links in their
- * own browser, and search engines read the icon the HTML names and nothing else.
- * Copying the Studio favicon into those files is what makes them show it too,
- * from the next build on.
+ * The icon the HTML names is the only one Safari, an iPhone, an app that opens
+ * links in its own browser, or a search engine ever reads, so the Studio favicon
+ * is copied into those files at build time. The site does not swap the icon from
+ * JavaScript: these files are the one source of it.
  *
  * Anything that stops it, no project configured or Sanity out of reach, keeps the
  * committed defaults and never fails the build. Nothing printed names the project.
  */
 import { existsSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import sharp from 'sharp'
 
 const OUT = process.argv[2] ?? 'dist'
 
-/** The files the HTML entry points link to, and the size each is written at. */
+/**
+ * The files the HTML entry points link to.
+ *
+ * The two tab icons are cut to a circle; a square upload otherwise sits in the
+ * tab as a white tile. The home screen icon is left square on purpose: iOS puts
+ * its own rounded mask over it and fills transparency with black, so a circle cut
+ * here would come back as a black-cornered square on the home screen.
+ */
 const FILES = [
-  ['favicon-32.png', 32],
-  ['favicon-192.png', 192],
-  ['apple-touch-icon.png', 180],
+  ['favicon-32.png', 32, 'circle'],
+  ['favicon-192.png', 192, 'circle'],
+  ['apple-touch-icon.png', 180, 'square'],
 ]
 
 /**
@@ -36,6 +43,18 @@ if (!process.env.VITE_SANITY_PROJECT_ID && existsSync('.env')) process.loadEnvFi
 const projectId = process.env.VITE_SANITY_PROJECT_ID
 const dataset = process.env.VITE_SANITY_DATASET ?? 'production'
 
+/** Keep what falls inside the inscribed circle and make the corners transparent. */
+async function circle(bytes, size) {
+  const mask = Buffer.from(
+    `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#fff"/></svg>`,
+  )
+  return sharp(bytes)
+    .resize(size, size, { fit: 'cover' })
+    .composite([{ input: mask, blend: 'dest-in' }])
+    .png()
+    .toBuffer()
+}
+
 async function sync() {
   const query = encodeURIComponent('*[_type == "siteSettings"][0].favicon.asset->url')
   const response = await fetch(
@@ -45,13 +64,14 @@ async function sync() {
   const { result: source } = await response.json()
   if (!source) return 'no favicon is set in Studio'
 
-  // Every size is downloaded before any is written, so a failure part way never
-  // leaves the tab icon and the home screen icon showing different images.
+  // Every size is downloaded and cut before any is written, so a failure part way
+  // never leaves the tab icon and the home screen icon showing different images.
   const images = []
-  for (const [file, size] of FILES) {
+  for (const [file, size, shape] of FILES) {
     const image = await fetch(`${source}?w=${size}&h=${size}&fit=max&fm=png`)
     if (!image.ok) throw new Error(`the favicon download answered ${image.status}`)
-    images.push([file, Buffer.from(await image.arrayBuffer())])
+    const bytes = Buffer.from(await image.arrayBuffer())
+    images.push([file, shape === 'circle' ? await circle(bytes, size) : bytes])
   }
   for (const [file, bytes] of images) writeFileSync(join(OUT, file), bytes)
   return null
